@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://dif07paq3g40e"]
 
-[ext_resource type="Script" uid="uid://dds20l1owepfs" path="res://developer/main_frame.gd" id="1_0xm2m"]
+[ext_resource type="Script" uid="uid://dds20l1owepfs" path="res://camera/camera_control.gd" id="1_0xm2m"]
 
 [node name="Main" type="Main" node_paths=PackedStringArray("level_viewport")]
 level_viewport = NodePath("MainFrame/VBoxContainer/LevelViewport/SubViewport")

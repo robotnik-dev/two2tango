@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://bas43hajypf6y"]
 
-[ext_resource type="PackedScene" uid="uid://5ljwxg0werxp" path="res://developer/grid_cell.tscn" id="1_qeo0w"]
+[ext_resource type="PackedScene" uid="uid://5ljwxg0werxp" path="res://level/grid_cell.tscn" id="1_qeo0w"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_q62xh"]
 bg_color = Color(0.188969, 0.188969, 0.188969, 1)
