@@ -1,23 +1,20 @@
-use godot::{
-    classes::{ISprite2D, Sprite2D},
-    prelude::*,
-};
+use godot::prelude::*;
+use level_generator::LevelGenerator;
+
+mod entrypoint;
+mod grid_cell;
+mod level;
+mod level_generator;
 
 struct GodotRustExtension;
 
 #[gdextension]
-unsafe impl ExtensionLibrary for GodotRustExtension {}
+unsafe impl ExtensionLibrary for GodotRustExtension {
+    fn on_level_init(level: InitLevel) {
+        LevelGenerator::register(level);
+    }
 
-// TODO: remove below when using the template
-#[derive(GodotClass)]
-#[class(init, base=Sprite2D)]
-struct Example {
-    base: Base<Sprite2D>,
-}
-
-#[godot_api]
-impl ISprite2D for Example {
-    fn process(&mut self, delta: f64) {
-        self.base_mut().rotate(1.0 * delta as f32);
+    fn on_level_deinit(level: InitLevel) {
+        LevelGenerator::unregister(level);
     }
 }

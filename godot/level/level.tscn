@@ -1,0 +1,267 @@
+[gd_scene load_steps=3 format=3 uid="uid://bas43hajypf6y"]
+
+[ext_resource type="PackedScene" uid="uid://5ljwxg0werxp" path="res://developer/grid_cell.tscn" id="1_qeo0w"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_q62xh"]
+bg_color = Color(0.188969, 0.188969, 0.188969, 1)
+border_width_left = 10
+border_width_top = 10
+border_width_right = 10
+border_width_bottom = 10
+border_color = Color(0, 0, 0, 1)
+corner_radius_top_left = 20
+corner_radius_top_right = 20
+corner_radius_bottom_right = 20
+corner_radius_bottom_left = 20
+
+[node name="Level" type="Level" node_paths=PackedStringArray("grid")]
+grid = NodePath("MarginContainer/PanelContainer/MarginContainer/GridContainer")
+cell_scene = ExtResource("1_qeo0w")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="PanelContainer" type="PanelContainer" parent="MarginContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_styles/panel = SubResource("StyleBoxFlat_q62xh")
+
+[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/PanelContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 25
+theme_override_constants/margin_top = 25
+theme_override_constants/margin_right = 25
+theme_override_constants/margin_bottom = 25
+
+[node name="GridContainer" type="GridContainer" parent="MarginContainer/PanelContainer/MarginContainer"]
+layout_mode = 2
+theme_override_constants/h_separation = 50
+theme_override_constants/v_separation = 50
+columns = 6
+
+[node name="@GridCell@27042" type="GridCell" parent="MarginContainer/PanelContainer/MarginContainer/GridContainer" node_paths=PackedStringArray("symbol_container", "constraint_container") instance=ExtResource("1_qeo0w")]
+symbol_container = NodePath("PanelContainer3/MarginContainer")
+constraint_container = NodePath("GridContainer")
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 2
+
+[node name="@GridCell@27043" type="GridCell" parent="MarginContainer/PanelContainer/MarginContainer/GridContainer" node_paths=PackedStringArray("symbol_container", "constraint_container") instance=ExtResource("1_qeo0w")]
+symbol_container = NodePath("PanelContainer3/MarginContainer")
+constraint_container = NodePath("GridContainer")
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 2
+
+[node name="@GridCell@27044" type="GridCell" parent="MarginContainer/PanelContainer/MarginContainer/GridContainer" node_paths=PackedStringArray("symbol_container", "constraint_container") instance=ExtResource("1_qeo0w")]
+symbol_container = NodePath("PanelContainer3/MarginContainer")
+constraint_container = NodePath("GridContainer")
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 2
+
+[node name="@GridCell@27045" type="GridCell" parent="MarginContainer/PanelContainer/MarginContainer/GridContainer" node_paths=PackedStringArray("symbol_container", "constraint_container") instance=ExtResource("1_qeo0w")]
+symbol_container = NodePath("PanelContainer3/MarginContainer")
+constraint_container = NodePath("GridContainer")
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 2
+
+[node name="@GridCell@27046" type="GridCell" parent="MarginContainer/PanelContainer/MarginContainer/GridContainer" node_paths=PackedStringArray("symbol_container", "constraint_container") instance=ExtResource("1_qeo0w")]
+symbol_container = NodePath("PanelContainer3/MarginContainer")
+constraint_container = NodePath("GridContainer")
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 2
+
+[node name="@GridCell@27047" type="GridCell" parent="MarginContainer/PanelContainer/MarginContainer/GridContainer" node_paths=PackedStringArray("symbol_container", "constraint_container") instance=ExtResource("1_qeo0w")]
+symbol_container = NodePath("PanelContainer3/MarginContainer")
+constraint_container = NodePath("GridContainer")
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 2
+
+[node name="@GridCell@27048" type="GridCell" parent="MarginContainer/PanelContainer/MarginContainer/GridContainer" node_paths=PackedStringArray("symbol_container", "constraint_container") instance=ExtResource("1_qeo0w")]
+symbol_container = NodePath("PanelContainer3/MarginContainer")
+constraint_container = NodePath("GridContainer")
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 2
+
+[node name="@GridCell@27049" type="GridCell" parent="MarginContainer/PanelContainer/MarginContainer/GridContainer" node_paths=PackedStringArray("symbol_container", "constraint_container") instance=ExtResource("1_qeo0w")]
+symbol_container = NodePath("PanelContainer3/MarginContainer")
+constraint_container = NodePath("GridContainer")
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 2
+
+[node name="@GridCell@27050" type="GridCell" parent="MarginContainer/PanelContainer/MarginContainer/GridContainer" node_paths=PackedStringArray("symbol_container", "constraint_container") instance=ExtResource("1_qeo0w")]
+symbol_container = NodePath("PanelContainer3/MarginContainer")
+constraint_container = NodePath("GridContainer")
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 2
+
+[node name="@GridCell@27051" type="GridCell" parent="MarginContainer/PanelContainer/MarginContainer/GridContainer" node_paths=PackedStringArray("symbol_container", "constraint_container") instance=ExtResource("1_qeo0w")]
+symbol_container = NodePath("PanelContainer3/MarginContainer")
+constraint_container = NodePath("GridContainer")
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 2
+
+[node name="@GridCell@27052" type="GridCell" parent="MarginContainer/PanelContainer/MarginContainer/GridContainer" node_paths=PackedStringArray("symbol_container", "constraint_container") instance=ExtResource("1_qeo0w")]
+symbol_container = NodePath("PanelContainer3/MarginContainer")
+constraint_container = NodePath("GridContainer")
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 2
+
+[node name="@GridCell@27053" type="GridCell" parent="MarginContainer/PanelContainer/MarginContainer/GridContainer" node_paths=PackedStringArray("symbol_container", "constraint_container") instance=ExtResource("1_qeo0w")]
+symbol_container = NodePath("PanelContainer3/MarginContainer")
+constraint_container = NodePath("GridContainer")
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 2
+
+[node name="@GridCell@27054" type="GridCell" parent="MarginContainer/PanelContainer/MarginContainer/GridContainer" node_paths=PackedStringArray("symbol_container", "constraint_container") instance=ExtResource("1_qeo0w")]
+symbol_container = NodePath("PanelContainer3/MarginContainer")
+constraint_container = NodePath("GridContainer")
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 2
+
+[node name="@GridCell@27055" type="GridCell" parent="MarginContainer/PanelContainer/MarginContainer/GridContainer" node_paths=PackedStringArray("symbol_container", "constraint_container") instance=ExtResource("1_qeo0w")]
+symbol_container = NodePath("PanelContainer3/MarginContainer")
+constraint_container = NodePath("GridContainer")
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 2
+
+[node name="@GridCell@27056" type="GridCell" parent="MarginContainer/PanelContainer/MarginContainer/GridContainer" node_paths=PackedStringArray("symbol_container", "constraint_container") instance=ExtResource("1_qeo0w")]
+symbol_container = NodePath("PanelContainer3/MarginContainer")
+constraint_container = NodePath("GridContainer")
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 2
+
+[node name="@GridCell@27057" type="GridCell" parent="MarginContainer/PanelContainer/MarginContainer/GridContainer" node_paths=PackedStringArray("symbol_container", "constraint_container") instance=ExtResource("1_qeo0w")]
+symbol_container = NodePath("PanelContainer3/MarginContainer")
+constraint_container = NodePath("GridContainer")
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 2
+
+[node name="@GridCell@27058" type="GridCell" parent="MarginContainer/PanelContainer/MarginContainer/GridContainer" node_paths=PackedStringArray("symbol_container", "constraint_container") instance=ExtResource("1_qeo0w")]
+symbol_container = NodePath("PanelContainer3/MarginContainer")
+constraint_container = NodePath("GridContainer")
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 2
+
+[node name="@GridCell@27059" type="GridCell" parent="MarginContainer/PanelContainer/MarginContainer/GridContainer" node_paths=PackedStringArray("symbol_container", "constraint_container") instance=ExtResource("1_qeo0w")]
+symbol_container = NodePath("PanelContainer3/MarginContainer")
+constraint_container = NodePath("GridContainer")
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 2
+
+[node name="@GridCell@27060" type="GridCell" parent="MarginContainer/PanelContainer/MarginContainer/GridContainer" node_paths=PackedStringArray("symbol_container", "constraint_container") instance=ExtResource("1_qeo0w")]
+symbol_container = NodePath("PanelContainer3/MarginContainer")
+constraint_container = NodePath("GridContainer")
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 2
+
+[node name="@GridCell@27061" type="GridCell" parent="MarginContainer/PanelContainer/MarginContainer/GridContainer" node_paths=PackedStringArray("symbol_container", "constraint_container") instance=ExtResource("1_qeo0w")]
+symbol_container = NodePath("PanelContainer3/MarginContainer")
+constraint_container = NodePath("GridContainer")
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 2
+
+[node name="@GridCell@27062" type="GridCell" parent="MarginContainer/PanelContainer/MarginContainer/GridContainer" node_paths=PackedStringArray("symbol_container", "constraint_container") instance=ExtResource("1_qeo0w")]
+symbol_container = NodePath("PanelContainer3/MarginContainer")
+constraint_container = NodePath("GridContainer")
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 2
+
+[node name="@GridCell@27063" type="GridCell" parent="MarginContainer/PanelContainer/MarginContainer/GridContainer" node_paths=PackedStringArray("symbol_container", "constraint_container") instance=ExtResource("1_qeo0w")]
+symbol_container = NodePath("PanelContainer3/MarginContainer")
+constraint_container = NodePath("GridContainer")
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 2
+
+[node name="@GridCell@27064" type="GridCell" parent="MarginContainer/PanelContainer/MarginContainer/GridContainer" node_paths=PackedStringArray("symbol_container", "constraint_container") instance=ExtResource("1_qeo0w")]
+symbol_container = NodePath("PanelContainer3/MarginContainer")
+constraint_container = NodePath("GridContainer")
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 2
+
+[node name="@GridCell@27065" type="GridCell" parent="MarginContainer/PanelContainer/MarginContainer/GridContainer" node_paths=PackedStringArray("symbol_container", "constraint_container") instance=ExtResource("1_qeo0w")]
+symbol_container = NodePath("PanelContainer3/MarginContainer")
+constraint_container = NodePath("GridContainer")
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 2
+
+[node name="@GridCell@27066" type="GridCell" parent="MarginContainer/PanelContainer/MarginContainer/GridContainer" node_paths=PackedStringArray("symbol_container", "constraint_container") instance=ExtResource("1_qeo0w")]
+symbol_container = NodePath("PanelContainer3/MarginContainer")
+constraint_container = NodePath("GridContainer")
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 2
+
+[node name="@GridCell@27067" type="GridCell" parent="MarginContainer/PanelContainer/MarginContainer/GridContainer" node_paths=PackedStringArray("symbol_container", "constraint_container") instance=ExtResource("1_qeo0w")]
+symbol_container = NodePath("PanelContainer3/MarginContainer")
+constraint_container = NodePath("GridContainer")
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 2
+
+[node name="@GridCell@27068" type="GridCell" parent="MarginContainer/PanelContainer/MarginContainer/GridContainer" node_paths=PackedStringArray("symbol_container", "constraint_container") instance=ExtResource("1_qeo0w")]
+symbol_container = NodePath("PanelContainer3/MarginContainer")
+constraint_container = NodePath("GridContainer")
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 2
+
+[node name="@GridCell@27069" type="GridCell" parent="MarginContainer/PanelContainer/MarginContainer/GridContainer" node_paths=PackedStringArray("symbol_container", "constraint_container") instance=ExtResource("1_qeo0w")]
+symbol_container = NodePath("PanelContainer3/MarginContainer")
+constraint_container = NodePath("GridContainer")
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 2
+
+[node name="@GridCell@27070" type="GridCell" parent="MarginContainer/PanelContainer/MarginContainer/GridContainer" node_paths=PackedStringArray("symbol_container", "constraint_container") instance=ExtResource("1_qeo0w")]
+symbol_container = NodePath("PanelContainer3/MarginContainer")
+constraint_container = NodePath("GridContainer")
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 2
+
+[node name="@GridCell@27071" type="GridCell" parent="MarginContainer/PanelContainer/MarginContainer/GridContainer" node_paths=PackedStringArray("symbol_container", "constraint_container") instance=ExtResource("1_qeo0w")]
+symbol_container = NodePath("PanelContainer3/MarginContainer")
+constraint_container = NodePath("GridContainer")
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 2
+
+[node name="@GridCell@27072" type="GridCell" parent="MarginContainer/PanelContainer/MarginContainer/GridContainer" node_paths=PackedStringArray("symbol_container", "constraint_container") instance=ExtResource("1_qeo0w")]
+symbol_container = NodePath("PanelContainer3/MarginContainer")
+constraint_container = NodePath("GridContainer")
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 2
+
+[node name="@GridCell@27073" type="GridCell" parent="MarginContainer/PanelContainer/MarginContainer/GridContainer" node_paths=PackedStringArray("symbol_container", "constraint_container") instance=ExtResource("1_qeo0w")]
+symbol_container = NodePath("PanelContainer3/MarginContainer")
+constraint_container = NodePath("GridContainer")
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 2
+
+[node name="@GridCell@27074" type="GridCell" parent="MarginContainer/PanelContainer/MarginContainer/GridContainer" node_paths=PackedStringArray("symbol_container", "constraint_container") instance=ExtResource("1_qeo0w")]
+symbol_container = NodePath("PanelContainer3/MarginContainer")
+constraint_container = NodePath("GridContainer")
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 2
+
+[node name="@GridCell@27075" type="GridCell" parent="MarginContainer/PanelContainer/MarginContainer/GridContainer" node_paths=PackedStringArray("symbol_container", "constraint_container") instance=ExtResource("1_qeo0w")]
+symbol_container = NodePath("PanelContainer3/MarginContainer")
+constraint_container = NodePath("GridContainer")
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 2
+
+[node name="@GridCell@27076" type="GridCell" parent="MarginContainer/PanelContainer/MarginContainer/GridContainer" node_paths=PackedStringArray("symbol_container", "constraint_container") instance=ExtResource("1_qeo0w")]
+symbol_container = NodePath("PanelContainer3/MarginContainer")
+constraint_container = NodePath("GridContainer")
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 2
+
+[node name="@GridCell@27077" type="GridCell" parent="MarginContainer/PanelContainer/MarginContainer/GridContainer" node_paths=PackedStringArray("symbol_container", "constraint_container") instance=ExtResource("1_qeo0w")]
+symbol_container = NodePath("PanelContainer3/MarginContainer")
+constraint_container = NodePath("GridContainer")
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 2
