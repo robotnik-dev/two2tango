@@ -66,7 +66,12 @@
 			"label": "godot-rust: Build Android Debug",
 			"detail": "Builds debug rust game library for Android phones",
 			"type": "shell",
-			"command": "clang.bat && cargo build --target=aarch64-linux-android",
+			"windows":{
+				"command": "clang.bat && cargo build --target=aarch64-linux-android",
+			},
+			"osx":{
+				"command": "source clang_osx.sh && cargo build --target=aarch64-linux-android",
+			},
 			"options": {
 				"cwd": "${cwd}/rust"
 			},

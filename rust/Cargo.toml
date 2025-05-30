@@ -6,7 +6,6 @@ edition = "2021"
 [lib]
 crate-type = ["cdylib"]
 
-[dependencies.godot]
-git = "https://github.com/godot-rust/gdext"
-branch = "master"
-features = ["experimental-wasm", "lazy-function-tables"]
+[dependencies]
+godot = { version = "0.2.4", features = ["register-docs"] }
+gdrust_kit = { path = "../../gdrust_kit", version = "0.1.0", features = ["dev"]}
