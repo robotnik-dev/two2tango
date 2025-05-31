@@ -11,7 +11,12 @@
 				"cwd": "godot"
 			},
 			"windows": {
-				"command": "${config:godot-rust.environment.godotEditorPath} --editor --verbose",
+				"command": "powershell.exe",
+				"args": [
+					"-NoExit",
+					"-Command",
+					"& '${config:godot-rust.environment.godotEditorPath}' --editor --verbose"
+				]
 			},
 			"osx":{
 				"command": "/Applications/Godot.app/Contents/MacOS/Godot --editor --verbose"
@@ -19,7 +24,6 @@
 			"group": "build",
 			"presentation": {
 				"echo": true,
-				"revealProblems": "onProblem",
 				"focus": false,
 				"panel": "shared",
 				"showReuseMessage": true,
@@ -35,7 +39,11 @@
 				"cwd": "godot"
 			},
 			"windows":{
-				"command": "${config:godot-rust.environment.godotEditorPath} --headless --verbose --export-release windows \"export\\game.exe\"",
+				"command": "powershell.exe",
+				"args": [
+					"-Command",
+					"& '${config:godot-rust.environment.godotEditorPath}' --headless --verbose --export-release windows 'export\\game.exe'"
+				]
 			},
 			"osx":{
 				"command": "/Applications/Godot.app/Contents/MacOS/Godot --headless --verbose --export-release mac export/game.zip"
@@ -47,8 +55,18 @@
 		{
 			"label": "godot-rust: Build Debug",
 			"detail": "Builds debug rust game library",
+			"dependsOn": "godot-rust: Update Icons",
 			"type": "shell",
-			"command": "cargo build",
+			"windows": {
+				"command": "powershell.exe",
+				"args": [
+					"-Command",
+					"cargo build"
+				]
+			},
+			"osx": {
+				"command": "cargo build"
+			},
 			"options": {
 				"cwd": "${cwd}/rust"
 			},
@@ -65,9 +83,14 @@
 		{
 			"label": "godot-rust: Build Android Debug",
 			"detail": "Builds debug rust game library for Android phones",
+			"dependsOn": "godot-rust: Update Icons",
 			"type": "shell",
 			"windows":{
-				"command": "clang.bat && cargo build --target=aarch64-linux-android",
+				"command": "powershell.exe",
+				"args": [
+					"-Command",
+					"& .\\clang.bat; cargo build --target=aarch64-linux-android"
+				]
 			},
 			"osx":{
 				"command": "source clang_osx.sh && cargo build --target=aarch64-linux-android",
@@ -80,9 +103,14 @@
 		{
 			"label": "godot-rust: Build Web Debug",
 			"detail": "Builds debug rust game library for HTML5",
+			"dependsOn": "godot-rust: Update Icons",
 			"type": "shell",
 			"windows":{
-				"command": "${userHome}\\emsdk\\emsdk activate 3.1.62 && ${userHome}\\emsdk\\emsdk_env.bat && cargo +nightly build -Zbuild-std --target wasm32-unknown-emscripten",
+				"command": "powershell.exe",
+				"args": [
+					"-Command",
+					"& '$env:USERPROFILE\\emsdk\\emsdk.bat' activate 3.1.62; & '$env:USERPROFILE\\emsdk\\emsdk_env.bat'; cargo +nightly build -Zbuild-std --target wasm32-unknown-emscripten"
+				]
 			},
 			"osx":{
 				"command": "${userHome}/emsdk/emsdk activate 3.1.62 && source ${userHome}/emsdk/emsdk_env.sh && cargo +nightly build -Zbuild-std --target wasm32-unknown-emscripten",
@@ -95,8 +123,18 @@
 		{
 			"label": "godot-rust: Build Release",
 			"detail": "Builds release rust game library",
+			"dependsOn": "godot-rust: Update Icons",
 			"type": "shell",
-			"command": "cargo build --release",
+			"windows": {
+				"command": "powershell.exe",
+				"args": [
+					"-Command",
+					"cargo build --release"
+				]
+			},
+			"osx": {
+				"command": "cargo build --release"
+			},
 			"options": {
 				"cwd": "${cwd}/rust"
 			},
@@ -106,11 +144,45 @@
 			"label": "godot-rust: Clean",
 			"detail": "Removes all artifacts of rust game library and its dependencies",
 			"type": "shell",
-			"command": "cargo clean",
+			"windows": {
+				"command": "powershell.exe",
+				"args": [
+					"-Command",
+					"cargo clean"
+				]
+			},
+			"osx": {
+				"command": "cargo clean"
+			},
 			"options": {
 				"cwd": "${cwd}/rust"
 			},
 			"group": "build"
-		}
+		},
+
+		//Prebuild Operations
+		{
+			"label": "godot-rust: Update Icons",
+			"detail": "updates icons for the build",
+			"type": "shell",
+			"windows": {
+				"command": "powershell.exe",
+				"args": [
+					"-Command",
+					"& .\\update_class_icons.ps1"
+				]
+			},
+			"osx": {
+				"command": "./update_class_icons.sh"
+			},
+			"group": "build",
+			"presentation": {
+				"echo": true,
+				"focus": false,
+				"panel": "shared",
+				"showReuseMessage": true,
+				"clear": false
+			}
+		},
 	]
 }
