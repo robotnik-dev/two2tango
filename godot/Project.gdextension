@@ -18,8 +18,8 @@ android.debug.arm64 =    "res://../rust/target/aarch64-linux-android/debug/libru
 android.release.arm64 =    "res://../rust/target/aarch64-linux-android/release/librust.so"
 
 [icons]
-Main = "res://assets/RustNode.svg"
 GridCell = "res://assets/RustNode.svg"
 Level = "res://assets/RustNode.svg"
 LevelGenerator = "res://assets/RustNode.svg"
 LevelBuilder = "res://assets/RustNode.svg"
+LevelManager = "res://assets/RustNode.svg"

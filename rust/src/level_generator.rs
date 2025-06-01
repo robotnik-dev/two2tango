@@ -17,12 +17,16 @@ impl LevelGenerator {
         LevelBuilder::new()
     }
 
+    /// Used to register the singleton inside the ExtensionLibrary crate once for the main game library during the
+    /// `InitLevel::Scene` phase
     pub fn register(level: InitLevel) {
         if level == InitLevel::Scene {
             Engine::singleton().register_singleton(SINGLETON_NAME, &LevelGenerator::new_alloc());
         }
     }
 
+    /// Used to unregister the singleton inside the ExtensionLibrary crate once for the main game library during the
+    /// `InitLevel::Scene` phase
     pub fn unregister(level: InitLevel) {
         if level == InitLevel::Scene {
             let mut engine = Engine::singleton();

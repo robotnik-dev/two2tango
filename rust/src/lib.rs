@@ -1,10 +1,10 @@
 use godot::prelude::*;
 use level_generator::LevelGenerator;
 
-mod entrypoint;
 mod grid_cell;
 mod level;
 mod level_generator;
+mod level_manager;
 
 struct GodotRustExtension;
 

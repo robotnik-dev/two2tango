@@ -6,21 +6,21 @@ use godot::{
 use crate::grid_cell::{Constraint, GridCell};
 
 pub const MIN_CELLS: i32 = 6;
-pub const MAX_CELLS: i32 = 15;
+pub const MAX_CELLS: i32 = 14;
 
 #[derive(GodotClass)]
 #[class(tool, init, base=Control)]
 pub struct Level {
-    #[export(range = (MIN_CELLS.into(), MAX_CELLS.into(), 1.))]
+    #[export(range = (MIN_CELLS.into(), MAX_CELLS.into(), 2.))]
     #[var(get, set = set_columns)]
     #[init(val = 6)]
     pub columns: i32,
 
     #[export]
-    grid: Option<Gd<GridContainer>>,
+    grid: OnEditor<Gd<GridContainer>>,
 
     #[export]
-    cell_scene: Option<Gd<PackedScene>>,
+    cell_scene: OnEditor<Gd<PackedScene>>,
 
     base: Base<Control>,
 }
@@ -35,53 +35,41 @@ impl IControl for Level {
 #[godot_api]
 impl Level {
     #[signal]
-    fn cell_clicked(id: i32);
+    pub fn cell_clicked(id: i32);
 
     #[signal]
-    fn level_solved();
+    pub fn level_solved();
 
     #[func]
     pub fn set_columns(&mut self, columns: i32) {
         self.columns = columns;
-        if let Some(mut grid) = self.get_grid() {
-            grid.set_columns(columns);
-            self.fill_grid_with_cells(columns * columns);
-        }
+        self.grid.set_columns(columns);
+        self.fill_grid_with_cells(columns * columns);
     }
 
     fn empty_grid(&mut self) {
-        if let Some(grid) = self.get_grid() {
-            for mut c in grid.get_children().iter_shared() {
-                c.queue_free();
-            }
+        for mut c in self.grid.get_children().iter_shared() {
+            c.queue_free();
         }
     }
 
     fn fill_grid_with_cells(&mut self, amount: i32) {
         self.empty_grid();
-        let Some(cell_scene) = self.get_cell_scene() else {
-            return;
-        };
-        if let Some(mut grid) = self.get_grid() {
-            for id in 0..amount {
-                let mut cell = cell_scene.instantiate_as::<GridCell>();
-                grid.add_child(&cell);
-                cell.set_owner(&self.to_gd());
-                cell.connect("clicked", &self.to_gd().callable("on_cell_clicked"));
-                cell.bind_mut().id = id;
-            }
+        for id in 0..amount {
+            let mut cell = self.cell_scene.instantiate_as::<GridCell>();
+            self.grid.add_child(&cell);
+            cell.set_owner(&self.to_gd());
+            cell.signals()
+                .clicked()
+                .connect_other(self, Self::on_cell_clicked);
+            cell.bind_mut().id = id;
         }
     }
 
     #[func]
+    /// Bubbles up the signal from each cell
     pub fn on_cell_clicked(&mut self, id: i32) {
-        if let Some(cell) = self.get_cell(id) {
-            if self.solved() {
-                self.base_mut().emit_signal("level_solved", &[]);
-            } else if self.forbidden() {
-                godot_print!("forbidden move with this cell: {:?}", cell);
-            }
-        }
+        self.signals().cell_clicked().emit(id);
     }
 
     #[func]
@@ -105,6 +93,36 @@ impl Level {
     }
 
     #[func]
+    pub fn get_cells_in_row(&self, row: i32) -> Array<Gd<GridCell>> {
+        let mut cells = Array::new();
+        for id in self.get_ids().iter_shared() {
+            if let Some(cell) = self.get_cell(id) {
+                if let Some((r, _)) = self.get_row_col(id) {
+                    if r == row {
+                        cells.push(&cell);
+                    }
+                }
+            }
+        }
+        cells
+    }
+
+    #[func]
+    pub fn get_cells_in_col(&self, col: i32) -> Array<Gd<GridCell>> {
+        let mut cells = Array::new();
+        for id in self.get_ids().iter_shared() {
+            if let Some(cell) = self.get_cell(id) {
+                if let Some((_, c)) = self.get_row_col(id) {
+                    if c == col {
+                        cells.push(&cell);
+                    }
+                }
+            }
+        }
+        cells
+    }
+
+    #[func]
     pub fn get_cell(&self, id: i32) -> Option<Gd<GridCell>> {
         match self.get_grid() {
             Some(grid) => grid.get_child(id).map(|c| c.cast::<GridCell>()),
@@ -112,45 +130,44 @@ impl Level {
         }
     }
 
+    /// Get the indices of the row and the column of a cell starting with (row: 0, col: 0) in the top left
+    pub fn get_row_col(&self, id: i32) -> Option<(i32, i32)> {
+        self.get_cell(id).map(|_| {
+            let row = id / self.columns;
+            let col = id % self.columns;
+            (row, col)
+        })
+    }
+
     #[func]
-    pub fn get_constraint_top(&self, id: i32) -> GString {
+    pub fn get_constraint_top(&self, id: i32) -> Constraint {
         match self.get_cell(id) {
             Some(cell) => cell.bind().get_constraint_top(),
-            None => Constraint::None.to_godot(),
+            None => Constraint::None,
         }
     }
 
     #[func]
-    pub fn get_constraint_right(&self, id: i32) -> GString {
+    pub fn get_constraint_right(&self, id: i32) -> Constraint {
         match self.get_cell(id) {
             Some(cell) => cell.bind().get_constraint_right(),
-            None => Constraint::None.to_godot(),
+            None => Constraint::None,
         }
     }
 
     #[func]
-    pub fn get_constraint_bot(&self, id: i32) -> GString {
+    pub fn get_constraint_bot(&self, id: i32) -> Constraint {
         match self.get_cell(id) {
             Some(cell) => cell.bind().get_constraint_bot(),
-            None => Constraint::None.to_godot(),
+            None => Constraint::None,
         }
     }
 
     #[func]
-    pub fn get_constraint_left(&self, id: i32) -> GString {
+    pub fn get_constraint_left(&self, id: i32) -> Constraint {
         match self.get_cell(id) {
             Some(cell) => cell.bind().get_constraint_left(),
-            None => Constraint::None.to_godot(),
+            None => Constraint::None,
         }
-    }
-
-    fn solved(&self) -> bool {
-        //TODO
-        false
-    }
-
-    fn forbidden(&self) -> bool {
-        //TODO
-        false
     }
 }

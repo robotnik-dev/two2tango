@@ -7,5 +7,5 @@ edition = "2021"
 crate-type = ["cdylib"]
 
 [dependencies]
-godot = { version = "0.2.4", features = ["register-docs"] }
+godot = { version = "0.3.0", features = ["register-docs"] }
 gdrust_kit = { path = "../../gdrust_kit", version = "0.1.0", features = ["dev"]}
