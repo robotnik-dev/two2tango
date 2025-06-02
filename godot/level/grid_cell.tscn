@@ -31,20 +31,21 @@ theme_override_styles/panel = ExtResource("1_1qybh")
 [node name="MarginContainer" type="MarginContainer" parent="PanelContainer3"]
 layout_mode = 2
 mouse_filter = 2
-theme_override_constants/margin_left = 15
-theme_override_constants/margin_top = 15
-theme_override_constants/margin_right = 15
-theme_override_constants/margin_bottom = 15
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
 
 [node name="MarginContainer2" type="MarginContainer" parent="PanelContainer3"]
 layout_mode = 2
-theme_override_constants/margin_left = 5
-theme_override_constants/margin_top = 5
-theme_override_constants/margin_right = 5
-theme_override_constants/margin_bottom = 5
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
 
 [node name="GridContainer" type="GridContainer" parent="."]
-custom_minimum_size = Vector2(200, 200)
+z_index = 10
+custom_minimum_size = Vector2(185, 185)
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5

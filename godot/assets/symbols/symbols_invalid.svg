@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="489.99997mm"
+   height="489.99997mm"
+   viewBox="0 0 489.99997 489.99997"
+   version="1.1"
+   id="svg1"
+   inkscape:version="1.4.2 (f4327f4, 2025-05-13)"
+   sodipodi:docname="emblems.svg"
+   inkscape:export-filename="..\..\Documents\projects\two2tango\godot\Documents\projects\two2tango\godot\Documents\projects\two2tango\godot\assets\symbols\invalid.svg"
+   inkscape:export-xdpi="96"
+   inkscape:export-ydpi="96"
+   inkscape:export-batch-path="..\..\Documents\projects\two2tango\godot\assets\symbols"
+   inkscape:export-batch-name="symbols"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#505050"
+     bordercolor="#ffffff"
+     borderopacity="1"
+     inkscape:showpageshadow="0"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="1"
+     inkscape:deskcolor="#505050"
+     inkscape:document-units="mm"
+     showgrid="true"
+     inkscape:zoom="0.38268137"
+     inkscape:cx="512.17544"
+     inkscape:cy="855.80336"
+     inkscape:window-width="2558"
+     inkscape:window-height="1401"
+     inkscape:window-x="-7"
+     inkscape:window-y="0"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="layer5">
+    <inkscape:grid
+       id="grid1"
+       units="mm"
+       originx="-11.000015"
+       originy="-11.000015"
+       spacingx="0.99999997"
+       spacingy="0.99999997"
+       empcolor="#0099e5"
+       empopacity="0.30196078"
+       color="#0099e5"
+       opacity="0.14901961"
+       empspacing="5"
+       enabled="true"
+       visible="true" />
+  </sodipodi:namedview>
+  <defs
+     id="defs1" />
+  <g
+     inkscape:groupmode="layer"
+     id="layer2"
+     inkscape:label="invalid"
+     style="display:inline;stroke:#9b0700;stroke-opacity:0.335025"
+     sodipodi:insensitive="true"
+     transform="translate(-11.000015,-11.000015)">
+    <path
+       style="display:inline;fill:#000000;stroke:#9b0700;stroke-width:25;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:0.335025"
+       d="M 63.754229,449.25959 452.02516,60.988655"
+       id="path1" />
+    <path
+       style="display:inline;fill:#000000;stroke:#9b0700;stroke-width:25;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:0.335025"
+       d="M 177.23302,466.38818 440.26771,203.35349"
+       id="path1-8"
+       sodipodi:nodetypes="cc" />
+    <path
+       style="display:inline;fill:#000000;stroke:#9b0700;stroke-width:25;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:0.335025"
+       d="M 316.98957,447.07108 428.49216,335.56849"
+       id="path1-8-2"
+       sodipodi:nodetypes="cc" />
+    <path
+       style="display:inline;fill:#000000;stroke:#9b0700;stroke-width:25;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:0.335025"
+       d="M 66.548089,207.19367 178.05068,95.691083"
+       id="path1-8-2-2"
+       sodipodi:nodetypes="cc" />
+    <path
+       style="display:inline;fill:#000000;stroke:#9b0700;stroke-width:25;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:0.335025"
+       d="M 53.741983,341.68052 316.77667,78.64583"
+       id="path1-8-1"
+       sodipodi:nodetypes="cc" />
+    <rect
+       style="fill:none;fill-opacity:0.739224;stroke:none;stroke-width:20;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1"
+       id="rect6-7-2"
+       width="489.99997"
+       height="489.99997"
+       x="11.000015"
+       y="11.000015" />
+  </g>
+</svg>

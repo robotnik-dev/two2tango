@@ -18,34 +18,8 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2ec0a03c8f9c91e3d8eb7ca56dea81c7248c03826dd3f545f33cd22ef275d4d1"
 
 [[package]]
-name = "gdrust_collision"
-version = "0.1.1"
-dependencies = [
- "godot",
-]
-
-[[package]]
 name = "gdrust_kit"
 version = "0.1.1"
-dependencies = [
- "gdrust_collision",
- "gdrust_pathfinding",
- "gdrust_player_controller",
-]
-
-[[package]]
-name = "gdrust_pathfinding"
-version = "0.1.1"
-dependencies = [
- "godot",
-]
-
-[[package]]
-name = "gdrust_player_controller"
-version = "0.1.0"
-dependencies = [
- "godot",
-]
 
 [[package]]
 name = "glam"

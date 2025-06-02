@@ -1,7 +1,7 @@
 use godot::{
     classes::{
-        control::MouseFilter, Container, Control, IControl, InputEvent, InputEventMouseButton,
-        StyleBoxFlat, Texture2D, TextureRect,
+        control::MouseFilter, texture_rect::ExpandMode, Container, Control, IControl, InputEvent,
+        InputEventMouseButton, StyleBoxFlat, Texture2D, TextureRect,
     },
     global::MouseButtonMask,
     prelude::*,
@@ -12,11 +12,13 @@ const CONSTRAINT_RIGHT_IDX: i32 = 5;
 const CONSTRAINT_BOT_IDX: i32 = 7;
 const CONSTRAINT_LEFT_IDX: i32 = 3;
 
-const PATH_TO_X_IMAGE: &str = "res://assets/symbols/moon.png";
-const PATH_TO_Y_IMAGE: &str = "res://assets/symbols/sun.png";
-const PATH_TO_EQUAL_IMAGE: &str = "res://assets/symbols/moon.png";
-const PATH_TO_NON_EQUAL_IMAGE: &str = "res://assets/symbols/sun.png";
-const PATH_TO_INVALID_IMAGE: &str = "res://assets/symbols/invalid.png";
+const PATH_TO_X_IMAGE: &str = "res://assets/symbols/symbols_X.svg";
+const PATH_TO_Y_IMAGE: &str = "res://assets/symbols/symbols_Y.svg";
+const PATH_TO_EQUAL_A_IMAGE: &str = "res://assets/symbols/symbols_equal_A.svg";
+const PATH_TO_EQUAL_B_IMAGE: &str = "res://assets/symbols/symbols_equal_B.svg";
+const PATH_TO_NON_EQUAL_A_IMAGE: &str = "res://assets/symbols/symbols_equal_B.svg";
+const PATH_TO_NON_EQUAL_B_IMAGE: &str = "res://assets/symbols/symbols_equal_B.svg";
+const PATH_TO_INVALID_IMAGE: &str = "res://assets/symbols/symbols_invalid.svg";
 
 const STYLEBOX_PATH_NOFOCUS: &str = "res://resources/grid_cell_nofocus.tres";
 const STYLEBOX_PATH_FOCUS: &str = "res://resources/grid_cell_focus.tres";
@@ -37,6 +39,42 @@ pub enum Symbol {
     None,
     X,
     Y,
+}
+
+#[derive(GodotConvert, Var, Export, Default, Debug, Clone, PartialEq)]
+#[godot(via=GString)]
+pub enum Border {
+    #[default]
+    None,
+    Top,
+    Right,
+    Bot,
+    Left,
+}
+
+#[derive(Debug, Clone, PartialEq, Default)]
+
+pub struct CellProps {
+    pub id: i32,
+    pub symbol: Symbol,
+    pub constraint_props: ConstraintProps,
+}
+
+#[derive(Debug, Clone, PartialEq, Default)]
+pub struct ConstraintProps {
+    pub constraint: Constraint,
+    pub constraint_direction: ConstraintDirection,
+}
+
+#[derive(GodotConvert, Var, Export, Debug, Clone, PartialEq, Default)]
+#[godot(via=GString)]
+pub enum ConstraintDirection {
+    #[default]
+    None,
+    Top,
+    Right,
+    Bot,
+    Left,
 }
 
 #[derive(GodotClass)]
@@ -78,7 +116,10 @@ pub struct GridCell {
     #[export]
     pub panel_container: OnEditor<Gd<Container>>,
 
+    #[var]
     pub id: i32,
+
+    pub props: CellProps,
 
     base: Base<Control>,
 }
@@ -119,8 +160,30 @@ impl GridCell {
     #[signal]
     pub fn constraint_left_changed(constraint: GString);
 
-    pub fn set_invalid_helper(&mut self, invalid: bool) {
+    pub fn setup(&mut self, props: CellProps) {
+        self.props = props;
+        self.update_props();
+    }
+
+    #[func]
+    pub fn update_props(&mut self) {
+        self.set_id(self.props.id);
+        self.set_symbol(self.props.symbol.clone());
+        self.set_constraint(self.props.constraint_props.clone());
+    }
+
+    pub fn set_invalid_rust(&mut self, invalid: bool) {
         self.set_invalid(invalid);
+    }
+
+    pub fn set_constraint(&mut self, constraint_props: ConstraintProps) {
+        match constraint_props.constraint_direction {
+            ConstraintDirection::Top => self.set_constraint_top(constraint_props.constraint),
+            ConstraintDirection::Right => self.set_constraint_right(constraint_props.constraint),
+            ConstraintDirection::Bot => self.set_constraint_bot(constraint_props.constraint),
+            ConstraintDirection::Left => self.set_constraint_left(constraint_props.constraint),
+            ConstraintDirection::None => {}
+        }
     }
 
     pub fn set_disabled(&mut self, disabled: bool, focus: bool) {
@@ -148,6 +211,7 @@ impl GridCell {
             let texture = load::<Texture2D>(PATH_TO_INVALID_IMAGE);
             let mut texture_rect = TextureRect::new_alloc();
             texture_rect.set_texture(&texture);
+            texture_rect.set_expand_mode(ExpandMode::IGNORE_SIZE);
             self.invalid_symbol_container.add_child(&texture_rect);
             texture_rect.set_owner(&self.to_gd());
         }
@@ -170,6 +234,7 @@ impl GridCell {
             let texture = load::<Texture2D>(path);
             let mut texture_rect = TextureRect::new_alloc();
             texture_rect.set_texture(&texture);
+            texture_rect.set_expand_mode(ExpandMode::IGNORE_SIZE);
             self.symbol_container.add_child(&texture_rect);
             texture_rect.set_owner(&self.to_gd());
         }
@@ -187,8 +252,8 @@ impl GridCell {
         self.constraint_top = constraint.clone();
         let maybe_path = match constraint {
             Constraint::None => None,
-            Constraint::Equal => Some(PATH_TO_EQUAL_IMAGE),
-            Constraint::NonEqual => Some(PATH_TO_NON_EQUAL_IMAGE),
+            Constraint::Equal => Some(PATH_TO_EQUAL_A_IMAGE),
+            Constraint::NonEqual => Some(PATH_TO_NON_EQUAL_A_IMAGE),
         };
 
         if let Some(c) = self.constraint_container.get_child(CONSTRAINT_TOP_IDX) {
@@ -197,6 +262,7 @@ impl GridCell {
                     Some(path) => {
                         let texture = load::<Texture2D>(path);
                         texture_rect.set_texture(&texture);
+                        texture_rect.set_expand_mode(ExpandMode::IGNORE_SIZE);
                     }
                     None => texture_rect.set_texture(Gd::null_arg()),
                 };
@@ -217,8 +283,8 @@ impl GridCell {
         self.constraint_right = constraint.clone();
         let maybe_path = match constraint {
             Constraint::None => None,
-            Constraint::Equal => Some(PATH_TO_EQUAL_IMAGE),
-            Constraint::NonEqual => Some(PATH_TO_NON_EQUAL_IMAGE),
+            Constraint::Equal => Some(PATH_TO_EQUAL_A_IMAGE),
+            Constraint::NonEqual => Some(PATH_TO_NON_EQUAL_A_IMAGE),
         };
         if let Some(c) = self.constraint_container.get_child(CONSTRAINT_RIGHT_IDX) {
             if let Ok(mut texture_rect) = c.try_cast::<TextureRect>() {
@@ -226,6 +292,7 @@ impl GridCell {
                     Some(path) => {
                         let texture = load::<Texture2D>(path);
                         texture_rect.set_texture(&texture);
+                        texture_rect.set_expand_mode(ExpandMode::IGNORE_SIZE);
                     }
                     None => texture_rect.set_texture(Gd::null_arg()),
                 };
@@ -246,8 +313,8 @@ impl GridCell {
         self.constraint_bot = constraint.clone();
         let maybe_path = match constraint {
             Constraint::None => None,
-            Constraint::Equal => Some(PATH_TO_EQUAL_IMAGE),
-            Constraint::NonEqual => Some(PATH_TO_NON_EQUAL_IMAGE),
+            Constraint::Equal => Some(PATH_TO_EQUAL_B_IMAGE),
+            Constraint::NonEqual => Some(PATH_TO_NON_EQUAL_B_IMAGE),
         };
         if let Some(c) = self.constraint_container.get_child(CONSTRAINT_BOT_IDX) {
             if let Ok(mut texture_rect) = c.try_cast::<TextureRect>() {
@@ -255,6 +322,9 @@ impl GridCell {
                     Some(path) => {
                         let texture = load::<Texture2D>(path);
                         texture_rect.set_texture(&texture);
+                        texture_rect.set_expand_mode(ExpandMode::IGNORE_SIZE);
+                        // B variant needs to be on top of A so changing draw order here
+                        texture_rect.set_z_index(20);
                     }
                     None => texture_rect.set_texture(Gd::null_arg()),
                 };
@@ -275,8 +345,8 @@ impl GridCell {
         self.constraint_left = constraint.clone();
         let maybe_path = match constraint {
             Constraint::None => None,
-            Constraint::Equal => Some(PATH_TO_EQUAL_IMAGE),
-            Constraint::NonEqual => Some(PATH_TO_NON_EQUAL_IMAGE),
+            Constraint::Equal => Some(PATH_TO_EQUAL_B_IMAGE),
+            Constraint::NonEqual => Some(PATH_TO_NON_EQUAL_B_IMAGE),
         };
         if let Some(c) = self.constraint_container.get_child(CONSTRAINT_LEFT_IDX) {
             if let Ok(mut texture_rect) = c.try_cast::<TextureRect>() {
@@ -284,6 +354,9 @@ impl GridCell {
                     Some(path) => {
                         let texture = load::<Texture2D>(path);
                         texture_rect.set_texture(&texture);
+                        texture_rect.set_expand_mode(ExpandMode::IGNORE_SIZE);
+                        // B variant needs to be on top of A so changing draw order here
+                        texture_rect.set_z_index(20);
                     }
                     None => texture_rect.set_texture(Gd::null_arg()),
                 };

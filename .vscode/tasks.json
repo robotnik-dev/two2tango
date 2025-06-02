@@ -89,7 +89,7 @@
 				"command": "powershell.exe",
 				"args": [
 					"-Command",
-					"& .\\clang.bat; cargo build --target=aarch64-linux-android"
+					"& .\\clang.ps1; cargo build --target=aarch64-linux-android"
 				]
 			},
 			"osx":{

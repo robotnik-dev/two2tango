@@ -6,9 +6,9 @@ use godot::{
 };
 
 use crate::{
-    grid_cell::Symbol,
+    grid_cell::{Constraint, ConstraintDirection, ConstraintProps, Symbol},
     level::Level,
-    level_generator::{self, LevelGenerator},
+    level_generator::{self, Difficulty, LevelGenerator},
 };
 
 enum RowColumn {
@@ -37,18 +37,42 @@ impl INode for LevelManager {
         if let Some(level_generator) =
             Engine::singleton().get_singleton(level_generator::SINGLETON_NAME)
         {
-            let mut level = level_generator
+            let level = level_generator
                 .cast::<LevelGenerator>()
                 .bind_mut()
                 .builder()
+                .difficulty(Difficulty::Normal)
                 .columns(6)
-                .difficulty(level_generator::Difficulty::Normal)
+                .expect("Column error")
+                // FIXME: quick test for funtionality
+                .set_constraint(
+                    14,
+                    ConstraintProps {
+                        constraint: Constraint::Equal,
+                        constraint_direction: ConstraintDirection::Bot,
+                    },
+                )
+                .expect("Constraint error")
+                .set_constraint(
+                    15,
+                    ConstraintProps {
+                        constraint: Constraint::Equal,
+                        constraint_direction: ConstraintDirection::Bot,
+                    },
+                )
+                .expect("Constraint error")
                 .build();
+
             self.level_viewport
                 .add_child_ex(&level)
                 .force_readable_name(true)
                 .done();
-            level.connect("cell_clicked", &self.base().callable("on_cell_clicked"));
+
+            level
+                .signals()
+                .cell_clicked()
+                .connect_other(self, Self::on_cell_clicked);
+
             self.set_active_level(Some(level));
         }
     }
@@ -60,6 +84,8 @@ impl LevelManager {
     fn on_cell_clicked(&mut self, id: i32) {
         if let Some(level) = self.get_active_level() {
             if let Some(mut cell) = level.bind().get_cell(id) {
+                godot_print!("Cell Id: {:?}", id);
+                godot_print!("Constraint: {:?}", cell.bind().get_constraint_right());
                 match self.move_valid(level.clone(), id) {
                     Ok(_) => {
                         if self.move_solved_puzzle(level.clone()) {
@@ -67,7 +93,7 @@ impl LevelManager {
                         } else {
                             godot_print!("Valid move but not solved");
                             level.bind().get_cells().iter_shared().for_each(|mut c| {
-                                c.bind_mut().set_invalid_helper(false);
+                                c.bind_mut().set_invalid_rust(false);
                                 c.bind_mut().set_disabled(false, false);
                             });
                         }
@@ -78,14 +104,14 @@ impl LevelManager {
                             RowColumn::Row(row) => {
                                 level.bind().get_cells_in_row(row).iter_shared().for_each(
                                     |mut c| {
-                                        c.bind_mut().set_invalid_helper(true);
+                                        c.bind_mut().set_invalid_rust(true);
                                     },
                                 );
                             }
                             RowColumn::Col(col) => {
                                 level.bind().get_cells_in_col(col).iter_shared().for_each(
                                     |mut c| {
-                                        c.bind_mut().set_invalid_helper(true);
+                                        c.bind_mut().set_invalid_rust(true);
                                     },
                                 );
                             }
@@ -164,7 +190,7 @@ impl LevelManager {
             .collect::<Vec<_>>();
         symbols_sorted.sort_by_key(|&(k, _)| k);
 
-        // 1. are there more than half of symbols the same
+        // 1. are there more than two symbols the same
         let mut consecutive_count = 1;
         let mut current_symbol = None;
         let mut current_id = 0;
@@ -181,7 +207,7 @@ impl LevelManager {
                         if *id == current_id + 1 {
                             consecutive_count += 1;
                         }
-                        if consecutive_count >= columns / 2 {
+                        if consecutive_count > 2 {
                             return Err((
                                 format!(
                                     "Invalid: more than two consecutive '{:?}' symbols in a row",
@@ -252,7 +278,7 @@ impl LevelManager {
             .collect::<Vec<_>>();
         symbols_sorted.sort_by_key(|&(k, _)| k);
 
-        // 1. are there more than three symbols the same
+        // 1. are there more than two symbols the same
         let mut consecutive_count = 1;
         let mut current_symbol = None;
         let mut current_id = 0;
@@ -270,7 +296,7 @@ impl LevelManager {
                         if *id == current_id + id_offset {
                             consecutive_count += 1;
                         }
-                        if consecutive_count >= columns / 2 {
+                        if consecutive_count > 2 {
                             return Err((
                                 format!(
                                     "Invalid: more than two consecutive '{:?}' symbols in a col",

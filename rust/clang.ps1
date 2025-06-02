@@ -1,0 +1,2 @@
+$env:CLANG_PATH = "$env:USERPROFILE\Documents\android_sdk\ndk\23.2.8568313\toolchains\llvm\prebuilt\windows-x86_64\bin\clang.exe"
+$env:CARGO_TARGET_AARCH64_LINUX_ANDROID_LINKER = "$env:USERPROFILE\Documents\android_sdk\ndk\23.2.8568313\toolchains\llvm\prebuilt\windows-x86_64\bin\aarch64-linux-android31-clang.cmd"

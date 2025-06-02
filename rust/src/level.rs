@@ -1,17 +1,18 @@
 use godot::{
     classes::{Control, GridContainer, IControl},
+    global::sqrt,
     prelude::*,
 };
 
-use crate::grid_cell::{Constraint, GridCell};
+use crate::grid_cell::{CellProps, Constraint, GridCell};
 
-pub const MIN_CELLS: i32 = 6;
-pub const MAX_CELLS: i32 = 14;
+pub const MIN_COLUMNS: i32 = 6;
+pub const MAX_COLUMNS: i32 = 14;
 
 #[derive(GodotClass)]
 #[class(tool, init, base=Control)]
 pub struct Level {
-    #[export(range = (MIN_CELLS.into(), MAX_CELLS.into(), 2.))]
+    #[export(range = (MIN_COLUMNS.into(), MAX_COLUMNS.into(), 2.))]
     #[var(get, set = set_columns)]
     #[init(val = 6)]
     pub columns: i32,
@@ -27,9 +28,7 @@ pub struct Level {
 
 #[godot_api]
 impl IControl for Level {
-    fn ready(&mut self) {
-        self.fill_grid_with_cells(self.get_columns() * self.get_columns());
-    }
+    fn ready(&mut self) {}
 }
 
 #[godot_api]
@@ -40,30 +39,32 @@ impl Level {
     #[signal]
     pub fn level_solved();
 
+    pub fn build(&mut self, cell_props: Vec<CellProps>) {
+        self.update_cell_props(cell_props);
+    }
+
+    pub fn update_cell_props(&mut self, cell_props: Vec<CellProps>) {
+        let amount = cell_props.len() as i32;
+        self.set_columns(sqrt(amount as f64) as i32);
+        for mut c in self.grid.get_children().iter_shared() {
+            c.queue_free();
+        }
+
+        for props in cell_props {
+            let mut cell = self.cell_scene.instantiate_as::<GridCell>();
+            self.grid.add_child(&cell);
+            cell.set_owner(&self.to_gd());
+            cell.bind_mut().setup(props);
+            cell.signals()
+                .clicked()
+                .connect_other(self, Self::on_cell_clicked);
+        }
+    }
+
     #[func]
     pub fn set_columns(&mut self, columns: i32) {
         self.columns = columns;
         self.grid.set_columns(columns);
-        self.fill_grid_with_cells(columns * columns);
-    }
-
-    fn empty_grid(&mut self) {
-        for mut c in self.grid.get_children().iter_shared() {
-            c.queue_free();
-        }
-    }
-
-    fn fill_grid_with_cells(&mut self, amount: i32) {
-        self.empty_grid();
-        for id in 0..amount {
-            let mut cell = self.cell_scene.instantiate_as::<GridCell>();
-            self.grid.add_child(&cell);
-            cell.set_owner(&self.to_gd());
-            cell.signals()
-                .clicked()
-                .connect_other(self, Self::on_cell_clicked);
-            cell.bind_mut().id = id;
-        }
     }
 
     #[func]
@@ -72,7 +73,6 @@ impl Level {
         self.signals().cell_clicked().emit(id);
     }
 
-    #[func]
     pub fn get_ids(&self) -> Array<i32> {
         let mut ids = Array::new();
         for i in 0..(self.columns * self.columns) {
