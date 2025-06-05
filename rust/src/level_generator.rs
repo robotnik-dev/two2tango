@@ -1,3 +1,6 @@
+use std::collections::HashMap;
+
+use gdrust_kit::utils::fuzzy::{FuzzyRule, FuzzySet, FuzzySystem};
 use godot::{classes::Engine, prelude::*};
 
 use crate::{
@@ -18,6 +21,10 @@ pub struct LevelGenerator {
 impl LevelGenerator {
     pub fn builder(&self) -> LevelBuilder {
         LevelBuilder::new()
+    }
+
+    pub fn applier(&self, level: Gd<Level>, settings: LevelSettings) -> SettingsApplier {
+        SettingsApplier::new(level, settings)
     }
 
     /// Used to register the singleton inside the ExtensionLibrary crate once for the main game library during the
@@ -44,18 +51,157 @@ impl LevelGenerator {
     }
 }
 
-#[derive(Debug, Default)]
-pub enum Difficulty {
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum DifficultyLevel {
     Easy,
     #[default]
     Normal,
     Hard,
+    Nightmare,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum LevelParameter {
+    Columns,
+    Constraints,
+    VisibleSymbols,
+}
+
+#[derive(Debug, Default)]
+pub struct LevelSettings {
+    pub columns: i32,
+    pub constraints: i32,
+    pub visible_symbols: i32,
+}
+
+#[derive(Debug, Clone)]
+pub struct LevelDifficultySystem {
+    fuzzy_system: FuzzySystem<DifficultyLevel, LevelParameter>,
+}
+
+impl Default for LevelDifficultySystem {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+impl LevelDifficultySystem {
+    pub fn new() -> Self {
+        let mut system = FuzzySystem::new();
+
+        system.add_input_set(FuzzySet::new(
+            DifficultyLevel::Easy,
+            vec![(0.0, 1.0), (4.0, 0.0)],
+        ));
+
+        system.add_input_set(FuzzySet::new(
+            DifficultyLevel::Normal,
+            vec![(0.0, 0.0), (4.0, 1.0), (6.0, 0.0)],
+        ));
+
+        system.add_input_set(FuzzySet::new(
+            DifficultyLevel::Hard,
+            vec![(4.0, 0.0), (6.0, 1.0), (10.0, 0.0)],
+        ));
+
+        system.add_input_set(FuzzySet::new(
+            DifficultyLevel::Nightmare,
+            vec![(6.0, 0.0), (10.0, 1.0)],
+        ));
+
+        // Define rules
+        system.add_rule(
+            FuzzyRule::new(DifficultyLevel::Easy)
+                .with_consequence(LevelParameter::Columns, 0.0)
+                .with_consequence(LevelParameter::Constraints, 1.0)
+                .with_consequence(LevelParameter::VisibleSymbols, 1.0),
+        );
+
+        system.add_rule(
+            FuzzyRule::new(DifficultyLevel::Normal)
+                .with_consequence(LevelParameter::Columns, 0.33)
+                .with_consequence(LevelParameter::Constraints, 0.66)
+                .with_consequence(LevelParameter::VisibleSymbols, 0.66),
+        );
+
+        system.add_rule(
+            FuzzyRule::new(DifficultyLevel::Hard)
+                .with_consequence(LevelParameter::Columns, 0.66)
+                .with_consequence(LevelParameter::Constraints, 0.33)
+                .with_consequence(LevelParameter::VisibleSymbols, 0.33),
+        );
+
+        system.add_rule(
+            FuzzyRule::new(DifficultyLevel::Nightmare)
+                .with_consequence(LevelParameter::Columns, 1.0)
+                .with_consequence(LevelParameter::Constraints, 0.0)
+                .with_consequence(LevelParameter::VisibleSymbols, 0.0),
+        );
+
+        Self {
+            fuzzy_system: system,
+        }
+    }
+
+    pub fn get_settings(&self, difficulty_level: f32) -> HashMap<LevelParameter, f32> {
+        self.fuzzy_system.evaluate(difficulty_level)
+    }
+
+    pub fn apply_settings(&self, difficulty_level: f32) -> LevelSettings {
+        let settings = self.get_settings(difficulty_level);
+
+        const MAX_CONSTRAINTS_PER_ROW_COL: i32 = 2;
+
+        let columns = *settings.get(&LevelParameter::Columns).unwrap_or(&0.0);
+        let visible_symbols = *settings
+            .get(&LevelParameter::VisibleSymbols)
+            .unwrap_or(&0.0);
+        let constraints = *settings.get(&LevelParameter::Constraints).unwrap_or(&0.0);
+
+        let mut actual_columns = MIN_COLUMNS as f32 + (MAX_COLUMNS - MIN_COLUMNS) as f32 * columns;
+        // round up to an even number
+        if actual_columns as i32 % 2 != 0 {
+            actual_columns = actual_columns.ceil()
+        }
+        let min_visibel_symbols = 0.15 * (actual_columns * actual_columns);
+        let actual_visible_symbols =
+            min_visibel_symbols + (actual_columns * actual_columns) * visible_symbols;
+        let min_constraints = actual_columns * actual_columns * 0.05;
+        let actual_constraints = min_constraints
+            + actual_columns * MAX_CONSTRAINTS_PER_ROW_COL as f32 * 2.0 * constraints;
+
+        LevelSettings {
+            columns: actual_columns as i32,
+            visible_symbols: actual_visible_symbols as i32,
+            constraints: actual_constraints as i32,
+        }
+    }
+}
+
+#[derive(GodotClass, Default)]
+#[class(init)]
+pub struct SettingsApplier {
+    level: Option<Gd<Level>>,
+    settings: LevelSettings,
+}
+
+impl SettingsApplier {
+    pub fn new(level: Gd<Level>, settings: LevelSettings) -> SettingsApplier {
+        Self {
+            level: Some(level),
+            settings,
+        }
+    }
+
+    pub fn apply(self) -> Gd<Level> {
+        //TODO
+        self.level.unwrap()
+    }
 }
 
 #[derive(GodotClass, Default)]
 #[class(init)]
 pub struct LevelBuilder {
-    difficulty: Difficulty,
     columns: i32,
     constraints: Vec<CellProps>,
 }
@@ -69,12 +215,7 @@ impl LevelBuilder {
         }
     }
 
-    pub fn difficulty(mut self, difficulty: Difficulty) -> LevelBuilder {
-        self.difficulty = difficulty;
-        self
-    }
-
-    pub fn columns(mut self, columns: i32) -> Result<LevelBuilder, String> {
+    pub fn columns(&mut self, columns: i32) -> Result<&mut Self, String> {
         if columns % 2 != 0 {
             return Err(format!("Columns '{columns}' must be an even number"));
         };
@@ -95,10 +236,10 @@ impl LevelBuilder {
 
     /// set the given constraint with the id and also with the corresponding id the constraint points to
     pub fn set_constraint(
-        mut self,
+        &mut self,
         id: i32,
         constraint_props: ConstraintProps,
-    ) -> Result<LevelBuilder, String> {
+    ) -> Result<&mut Self, String> {
         // check if id is out of bounds
         if id >= self.columns * self.columns || id < 0 {
             return Err(format!(
@@ -107,54 +248,85 @@ impl LevelBuilder {
             ));
         }
 
-        let cell_prop = CellProps {
-            id,
-            constraint_props: constraint_props.clone(),
-            ..Default::default()
-        };
+        // check if this exact constraint already exists
+        if self.constraints.iter().any(|p| {
+            p.constraint_props.iter().any(|c| {
+                c.constraint == constraint_props.constraint
+                    && c.constraint_direction == constraint_props.constraint_direction
+            } && p.id == id)
+        }) {
+            return Err(format!(
+                "Constraint: {constraint_props:?} for id: {id} already exist"
+            ));
+        }
 
+        //TODO: check any constraints that may violate this constraint e.g. setting an equal constraint twice in a col consecutive
+        // means that one of the game rules cant be upheld anymore (more than two symbols in a row)
+
+        // check if the cell prop already exists. remove the existing one and edit it
+        let cell_prop = match self.constraints.iter().position(|p| p.id == id) {
+            Some(index) => {
+                let cell_props = self.constraints.swap_remove(index);
+                let mut con_props = cell_props.constraint_props.clone();
+                con_props.push(constraint_props.clone());
+                CellProps {
+                    id,
+                    constraint_props: con_props,
+                    ..Default::default()
+                }
+            }
+            None => CellProps {
+                id,
+                constraint_props: vec![constraint_props.clone()],
+                ..Default::default()
+            },
+        };
+        self.constraints.push(cell_prop.clone());
+
+        // visit only the contraint that just got added
+        // for c_props in cell_prop.constraint_props.iter() {
         let (pair_id, direction) = match constraint_props.constraint_direction {
             ConstraintDirection::Top => {
                 if self.get_border(id) == Border::Top {
                     return Err(format!(
-                        "Cant set constraint: {:?} for direction: {:?}, because id: {} is in the top most row!",
-                        constraint_props.constraint,
-                        constraint_props.constraint_direction,
-                        id
-                    ));
+                            "Cant set constraint: {:?} for direction: {:?}, because id: {} is in the top most row!",
+                            constraint_props.constraint,
+                            constraint_props.constraint_direction,
+                            id
+                        ));
                 };
                 (id - self.columns, ConstraintDirection::Bot)
             }
             ConstraintDirection::Right => {
                 if self.get_border(id) == Border::Right {
                     return Err(format!(
-                        "Cant set constraint: {:?} for direction: {:?}, because id: {} is in the right most row!",
-                        constraint_props.constraint,
-                        constraint_props.constraint_direction,
-                        id
-                    ));
+                            "Cant set constraint: {:?} for direction: {:?}, because id: {} is in the right most row!",
+                            constraint_props.constraint,
+                            constraint_props.constraint_direction,
+                            id
+                        ));
                 };
                 (id + 1, ConstraintDirection::Left)
             }
             ConstraintDirection::Bot => {
                 if self.get_border(id) == Border::Bot {
                     return Err(format!(
-                        "Cant set constraint: {:?} for direction: {:?}, because id: {} is in the bottom most row!",
-                        constraint_props.constraint,
-                        constraint_props.constraint_direction,
-                        id
-                    ));
+                            "Cant set constraint: {:?} for direction: {:?}, because id: {} is in the bottom most row!",
+                            constraint_props.constraint,
+                            constraint_props.constraint_direction,
+                            id
+                        ));
                 };
                 (id + self.columns, ConstraintDirection::Top)
             }
             ConstraintDirection::Left => {
                 if self.get_border(id) == Border::Left {
                     return Err(format!(
-                        "Cant set constraint: {:?} for direction: {:?}, because id: {} is in the left most row!",
-                        constraint_props.constraint,
-                        constraint_props.constraint_direction,
-                        id
-                    ));
+                            "Cant set constraint: {:?} for direction: {:?}, because id: {} is in the left most row!",
+                            constraint_props.constraint,
+                            constraint_props.constraint_direction,
+                            id
+                        ));
                 };
                 (id - 1, ConstraintDirection::Right)
             }
@@ -163,15 +335,35 @@ impl LevelBuilder {
             }
         };
 
-        let pair_cell_prop = CellProps {
-            id: pair_id,
-            constraint_props: ConstraintProps {
-                constraint: constraint_props.constraint,
-                constraint_direction: direction,
+        // like above: check if the cell prop for the pair id already exists. remove the existing one and edit it
+        let pair_cell_prop = match self.constraints.iter().position(|p| p.id == pair_id) {
+            Some(index) => {
+                let existing_cell_props = self.constraints.swap_remove(index);
+                let mut con_props_list = existing_cell_props.constraint_props.clone();
+                let new_constraint_props = ConstraintProps {
+                    constraint: constraint_props.constraint.clone(),
+                    constraint_direction: direction.clone(),
+                };
+                // push only when the new constraint doesnt already exist
+                if !con_props_list.contains(&new_constraint_props) {
+                    con_props_list.push(new_constraint_props.clone());
+                }
+                CellProps {
+                    id,
+                    constraint_props: con_props_list,
+                    ..Default::default()
+                }
+            }
+            None => CellProps {
+                id: pair_id,
+                constraint_props: vec![ConstraintProps {
+                    constraint: constraint_props.constraint.clone(),
+                    constraint_direction: direction.clone(),
+                }],
+                ..Default::default()
             },
-            ..Default::default()
         };
-        self.constraints.push(cell_prop);
+
         self.constraints.push(pair_cell_prop);
         Ok(self)
     }
@@ -181,9 +373,22 @@ impl LevelBuilder {
         let level_scene = load::<PackedScene>(LEVEL_SCENE_PATH);
         let mut level = level_scene.instantiate_as::<Level>();
 
+        // join cell properties with the same id under just one property
+        let mut final_constraints: HashMap<i32, CellProps> = HashMap::new();
+
+        for cell_p in self.constraints {
+            if let Some(entry) = final_constraints.get(&cell_p.id) {
+                let mut new_entry = entry.clone();
+                new_entry.constraint_props.extend(cell_p.constraint_props);
+                final_constraints.insert(cell_p.id, new_entry);
+            } else {
+                final_constraints.insert(cell_p.id, cell_p);
+            }
+        }
+
         let mut cell_props = vec![];
         for id in 0..self.columns * self.columns {
-            let props = match self.constraints.iter().find(|&prop| prop.id == id) {
+            let props = match final_constraints.get(&id) {
                 // already setup properties, just use this one
                 Some(props) => props.clone(),
                 // generate default properties

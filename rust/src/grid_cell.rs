@@ -57,7 +57,7 @@ pub enum Border {
 pub struct CellProps {
     pub id: i32,
     pub symbol: Symbol,
-    pub constraint_props: ConstraintProps,
+    pub constraint_props: Vec<ConstraintProps>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default)]
@@ -169,7 +169,16 @@ impl GridCell {
     pub fn update_props(&mut self) {
         self.set_id(self.props.id);
         self.set_symbol(self.props.symbol.clone());
-        self.set_constraint(self.props.constraint_props.clone());
+        let props = self.props.constraint_props.clone();
+        // godot_print!("Id: {:?}", self.id);
+        // godot_print!("props: {:?}", props);
+        for prop in props.iter() {
+            self.set_constraint(prop.clone());
+        }
+    }
+
+    pub fn get_constraint_props(&self) -> Vec<ConstraintProps> {
+        self.props.constraint_props.clone()
     }
 
     pub fn set_invalid_rust(&mut self, invalid: bool) {
@@ -243,7 +252,7 @@ impl GridCell {
     }
 
     #[func]
-    pub fn get_symbol(&mut self) -> Symbol {
+    pub fn get_symbol(&self) -> Symbol {
         self.symbol.clone()
     }
 
@@ -370,6 +379,10 @@ impl GridCell {
     #[func]
     pub fn get_constraint_left(&self) -> Constraint {
         self.constraint_left.clone()
+    }
+
+    pub fn switch_to(&mut self, symbol: Symbol) {
+        self.set_symbol(symbol);
     }
 
     fn switch_to_next_symbol(&mut self) {

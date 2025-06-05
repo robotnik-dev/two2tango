@@ -21,5 +21,6 @@ android.release.arm64 =    "res://../rust/target/aarch64-linux-android/release/l
 GridCell = "res://assets/RustNode.svg"
 Level = "res://assets/RustNode.svg"
 LevelGenerator = "res://assets/RustNode.svg"
+SettingsApplier = "res://assets/RustNode.svg"
 LevelBuilder = "res://assets/RustNode.svg"
 LevelManager = "res://assets/RustNode.svg"

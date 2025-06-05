@@ -4,7 +4,7 @@ use godot::{
     prelude::*,
 };
 
-use crate::grid_cell::{CellProps, Constraint, GridCell};
+use crate::grid_cell::{CellProps, Constraint, ConstraintProps, GridCell, Symbol};
 
 pub const MIN_COLUMNS: i32 = 6;
 pub const MAX_COLUMNS: i32 = 14;
@@ -41,6 +41,12 @@ impl Level {
 
     pub fn build(&mut self, cell_props: Vec<CellProps>) {
         self.update_cell_props(cell_props);
+    }
+
+    pub fn solved(&self) -> bool {
+        self.get_cells()
+            .iter_shared()
+            .all(|cell| cell.bind().get_symbol() != Symbol::None)
     }
 
     pub fn update_cell_props(&mut self, cell_props: Vec<CellProps>) {
@@ -130,6 +136,10 @@ impl Level {
         }
     }
 
+    pub fn get_symbol(&self, id: i32) -> Option<Symbol> {
+        self.get_cell(id).map(|cell| cell.bind().get_symbol())
+    }
+
     /// Get the indices of the row and the column of a cell starting with (row: 0, col: 0) in the top left
     pub fn get_row_col(&self, id: i32) -> Option<(i32, i32)> {
         self.get_cell(id).map(|_| {
@@ -137,6 +147,10 @@ impl Level {
             let col = id % self.columns;
             (row, col)
         })
+    }
+
+    pub fn get_constraint_props(&self, id: i32) -> Vec<ConstraintProps> {
+        self.get_cell(id).unwrap().bind().get_constraint_props()
     }
 
     #[func]
