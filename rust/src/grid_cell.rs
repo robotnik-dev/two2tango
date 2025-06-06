@@ -89,19 +89,19 @@ pub struct GridCell {
     pub invalid: bool,
 
     #[export]
-    #[var(get = get_constraint_top, set = set_constraint_top)]
+    #[var(get, set = set_constraint_top)]
     pub constraint_top: Constraint,
 
     #[export]
-    #[var(get = get_constraint_right, set = set_constraint_right)]
+    #[var(get, set = set_constraint_right)]
     pub constraint_right: Constraint,
 
     #[export]
-    #[var(get = get_constraint_bot, set = set_constraint_bot)]
+    #[var(get, set = set_constraint_bot)]
     pub constraint_bot: Constraint,
 
     #[export]
-    #[var(get = get_constraint_left, set = set_constraint_left)]
+    #[var(get, set = set_constraint_left)]
     pub constraint_left: Constraint,
 
     #[export]
@@ -170,8 +170,6 @@ impl GridCell {
         self.set_id(self.props.id);
         self.set_symbol(self.props.symbol.clone());
         let props = self.props.constraint_props.clone();
-        // godot_print!("Id: {:?}", self.id);
-        // godot_print!("props: {:?}", props);
         for prop in props.iter() {
             self.set_constraint(prop.clone());
         }
@@ -283,11 +281,6 @@ impl GridCell {
     }
 
     #[func]
-    pub fn get_constraint_top(&self) -> Constraint {
-        self.constraint_top.clone()
-    }
-
-    #[func]
     fn set_constraint_right(&mut self, constraint: Constraint) {
         self.constraint_right = constraint.clone();
         let maybe_path = match constraint {
@@ -310,11 +303,6 @@ impl GridCell {
                     .emit(&constraint.to_godot());
             }
         }
-    }
-
-    #[func]
-    pub fn get_constraint_right(&self) -> Constraint {
-        self.constraint_right.clone()
     }
 
     #[func]
@@ -345,11 +333,6 @@ impl GridCell {
     }
 
     #[func]
-    pub fn get_constraint_bot(&self) -> Constraint {
-        self.constraint_bot.clone()
-    }
-
-    #[func]
     fn set_constraint_left(&mut self, constraint: Constraint) {
         self.constraint_left = constraint.clone();
         let maybe_path = match constraint {
@@ -374,11 +357,6 @@ impl GridCell {
                     .emit(&constraint.to_godot());
             }
         }
-    }
-
-    #[func]
-    pub fn get_constraint_left(&self) -> Constraint {
-        self.constraint_left.clone()
     }
 
     pub fn switch_to(&mut self, symbol: Symbol) {

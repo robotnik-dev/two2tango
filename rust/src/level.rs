@@ -1,20 +1,23 @@
 use godot::{
     classes::{Control, GridContainer, IControl},
-    global::sqrt,
+    global::{randi_range, sqrt},
     prelude::*,
 };
 
-use crate::grid_cell::{CellProps, Constraint, ConstraintProps, GridCell, Symbol};
+use crate::{
+    grid_cell::{CellProps, Constraint, ConstraintProps, GridCell, Symbol},
+    level_manager::RowColumn,
+};
 
 pub const MIN_COLUMNS: i32 = 6;
-pub const MAX_COLUMNS: i32 = 14;
+pub const MAX_COLUMNS: i32 = 10;
 
 #[derive(GodotClass)]
 #[class(tool, init, base=Control)]
 pub struct Level {
     #[export(range = (MIN_COLUMNS.into(), MAX_COLUMNS.into(), 2.))]
     #[var(get, set = set_columns)]
-    #[init(val = 6)]
+    #[init(val = MIN_COLUMNS)]
     pub columns: i32,
 
     #[export]
@@ -41,12 +44,6 @@ impl Level {
 
     pub fn build(&mut self, cell_props: Vec<CellProps>) {
         self.update_cell_props(cell_props);
-    }
-
-    pub fn solved(&self) -> bool {
-        self.get_cells()
-            .iter_shared()
-            .all(|cell| cell.bind().get_symbol() != Symbol::None)
     }
 
     pub fn update_cell_props(&mut self, cell_props: Vec<CellProps>) {
@@ -136,6 +133,12 @@ impl Level {
         }
     }
 
+    #[func]
+    pub fn get_random_cell(&self) -> Option<Gd<GridCell>> {
+        let random_id = randi_range(0, (self.get_ids().len() - 1) as i64);
+        self.get_cell(random_id as i32)
+    }
+
     pub fn get_symbol(&self, id: i32) -> Option<Symbol> {
         self.get_cell(id).map(|cell| cell.bind().get_symbol())
     }
@@ -151,37 +154,5 @@ impl Level {
 
     pub fn get_constraint_props(&self, id: i32) -> Vec<ConstraintProps> {
         self.get_cell(id).unwrap().bind().get_constraint_props()
-    }
-
-    #[func]
-    pub fn get_constraint_top(&self, id: i32) -> Constraint {
-        match self.get_cell(id) {
-            Some(cell) => cell.bind().get_constraint_top(),
-            None => Constraint::None,
-        }
-    }
-
-    #[func]
-    pub fn get_constraint_right(&self, id: i32) -> Constraint {
-        match self.get_cell(id) {
-            Some(cell) => cell.bind().get_constraint_right(),
-            None => Constraint::None,
-        }
-    }
-
-    #[func]
-    pub fn get_constraint_bot(&self, id: i32) -> Constraint {
-        match self.get_cell(id) {
-            Some(cell) => cell.bind().get_constraint_bot(),
-            None => Constraint::None,
-        }
-    }
-
-    #[func]
-    pub fn get_constraint_left(&self, id: i32) -> Constraint {
-        match self.get_cell(id) {
-            Some(cell) => cell.bind().get_constraint_left(),
-            None => Constraint::None,
-        }
     }
 }
