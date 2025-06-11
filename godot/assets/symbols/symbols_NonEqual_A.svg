@@ -57,20 +57,20 @@
      id="defs1" />
   <g
      inkscape:groupmode="layer"
-     id="layer5"
-     inkscape:label="Equal_A"
+     id="g3"
+     inkscape:label="NonEqual_A"
      sodipodi:insensitive="true"
      style="display:inline"
      transform="translate(-11.000015,-11.000015)">
     <circle
        style="fill:#aaaaaa;fill-opacity:0.739224;stroke:#000000;stroke-width:20;stroke-dasharray:none;stroke-opacity:1"
-       id="path5"
+       id="circle3"
        cx="256"
        cy="256"
        r="190" />
     <rect
        style="fill:none;fill-opacity:0.739224;stroke:none;stroke-width:20;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1"
-       id="rect6-7"
+       id="rect3"
        width="489.99997"
        height="489.99997"
        x="11.000015"

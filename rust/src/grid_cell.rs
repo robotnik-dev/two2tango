@@ -3,7 +3,7 @@ use godot::{
         control::MouseFilter, texture_rect::ExpandMode, Container, Control, IControl, InputEvent,
         InputEventMouseButton, StyleBoxFlat, Texture2D, TextureRect,
     },
-    global::MouseButtonMask,
+    global::{randf, MouseButtonMask},
     prelude::*,
 };
 
@@ -14,10 +14,10 @@ const CONSTRAINT_LEFT_IDX: i32 = 3;
 
 const PATH_TO_X_IMAGE: &str = "res://assets/symbols/symbols_X.svg";
 const PATH_TO_Y_IMAGE: &str = "res://assets/symbols/symbols_Y.svg";
-const PATH_TO_EQUAL_A_IMAGE: &str = "res://assets/symbols/symbols_equal_A.svg";
-const PATH_TO_EQUAL_B_IMAGE: &str = "res://assets/symbols/symbols_equal_B.svg";
-const PATH_TO_NON_EQUAL_A_IMAGE: &str = "res://assets/symbols/symbols_equal_B.svg";
-const PATH_TO_NON_EQUAL_B_IMAGE: &str = "res://assets/symbols/symbols_equal_B.svg";
+const PATH_TO_EQUAL_A_IMAGE: &str = "res://assets/symbols/symbols_Equal_A.svg";
+const PATH_TO_EQUAL_B_IMAGE: &str = "res://assets/symbols/symbols_Equal_B.svg";
+const PATH_TO_NON_EQUAL_A_IMAGE: &str = "res://assets/symbols/symbols_NonEqual_A.svg";
+const PATH_TO_NON_EQUAL_B_IMAGE: &str = "res://assets/symbols/symbols_NonEqual_B.svg";
 const PATH_TO_INVALID_IMAGE: &str = "res://assets/symbols/symbols_invalid.svg";
 
 const STYLEBOX_PATH_NOFOCUS: &str = "res://resources/grid_cell_nofocus.tres";
@@ -30,6 +30,16 @@ pub enum Constraint {
     None,
     Equal,
     NonEqual,
+}
+
+impl Constraint {
+    pub fn random_not_none() -> Constraint {
+        if randf() > 0.5 {
+            Constraint::Equal
+        } else {
+            Constraint::NonEqual
+        }
+    }
 }
 
 #[derive(GodotConvert, Var, Export, Default, Debug, Clone, PartialEq)]
@@ -52,18 +62,40 @@ pub enum Border {
     Left,
 }
 
-#[derive(Debug, Clone, PartialEq, Default)]
-
+#[derive(GodotClass)]
+#[class(no_init)]
 pub struct CellProps {
     pub id: i32,
     pub symbol: Symbol,
-    pub constraint_props: Vec<ConstraintProps>,
+    pub constraint_props: Array<Gd<ConstraintProps>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Default)]
+#[godot_api]
+impl CellProps {
+    pub fn new(id: i32, symbol: Symbol, constraint_props: Array<Gd<ConstraintProps>>) -> Gd<Self> {
+        Gd::from_object(Self {
+            id,
+            symbol,
+            constraint_props,
+        })
+    }
+}
+
+#[derive(GodotClass)]
+#[class(init)]
 pub struct ConstraintProps {
     pub constraint: Constraint,
     pub constraint_direction: ConstraintDirection,
+}
+
+#[godot_api]
+impl ConstraintProps {
+    pub fn new(constraint: Constraint, constraint_direction: ConstraintDirection) -> Gd<Self> {
+        Gd::from_object(Self {
+            constraint,
+            constraint_direction,
+        })
+    }
 }
 
 #[derive(GodotConvert, Var, Export, Debug, Clone, PartialEq, Default)]
@@ -75,6 +107,21 @@ pub enum ConstraintDirection {
     Right,
     Bot,
     Left,
+}
+
+impl ConstraintDirection {
+    pub fn random_not_none() -> ConstraintDirection {
+        let r = randf();
+        if r < 0.25 {
+            ConstraintDirection::Top
+        } else if r < 0.5 {
+            ConstraintDirection::Right
+        } else if r < 7.5 {
+            ConstraintDirection::Bot
+        } else {
+            ConstraintDirection::Left
+        }
+    }
 }
 
 #[derive(GodotClass)]
@@ -119,7 +166,8 @@ pub struct GridCell {
     #[var]
     pub id: i32,
 
-    pub props: CellProps,
+    #[init(val = CellProps::new(0, Symbol::None, array![]))]
+    pub props: Gd<CellProps>,
 
     base: Base<Control>,
 }
@@ -160,35 +208,38 @@ impl GridCell {
     #[signal]
     pub fn constraint_left_changed(constraint: GString);
 
-    pub fn setup(&mut self, props: CellProps) {
+    pub fn setup(&mut self, props: Gd<CellProps>) {
         self.props = props;
-        self.update_props();
-    }
-
-    #[func]
-    pub fn update_props(&mut self) {
-        self.set_id(self.props.id);
-        self.set_symbol(self.props.symbol.clone());
-        let props = self.props.constraint_props.clone();
-        for prop in props.iter() {
+        self.set_id(self.props.clone().bind().id);
+        self.set_symbol(self.props.clone().bind().symbol.clone());
+        let props = self.props.bind().constraint_props.clone();
+        for prop in props.iter_shared() {
             self.set_constraint(prop.clone());
         }
     }
 
-    pub fn get_constraint_props(&self) -> Vec<ConstraintProps> {
-        self.props.constraint_props.clone()
+    pub fn get_constraint_props(&self) -> Array<Gd<ConstraintProps>> {
+        self.props.bind().constraint_props.clone()
     }
 
     pub fn set_invalid_rust(&mut self, invalid: bool) {
         self.set_invalid(invalid);
     }
 
-    pub fn set_constraint(&mut self, constraint_props: ConstraintProps) {
-        match constraint_props.constraint_direction {
-            ConstraintDirection::Top => self.set_constraint_top(constraint_props.constraint),
-            ConstraintDirection::Right => self.set_constraint_right(constraint_props.constraint),
-            ConstraintDirection::Bot => self.set_constraint_bot(constraint_props.constraint),
-            ConstraintDirection::Left => self.set_constraint_left(constraint_props.constraint),
+    pub fn set_constraint(&mut self, constraint_props: Gd<ConstraintProps>) {
+        match constraint_props.bind().constraint_direction {
+            ConstraintDirection::Top => {
+                self.set_constraint_top(constraint_props.clone().bind().constraint.clone())
+            }
+            ConstraintDirection::Right => {
+                self.set_constraint_right(constraint_props.clone().bind().constraint.clone())
+            }
+            ConstraintDirection::Bot => {
+                self.set_constraint_bot(constraint_props.clone().bind().constraint.clone())
+            }
+            ConstraintDirection::Left => {
+                self.set_constraint_left(constraint_props.clone().bind().constraint.clone())
+            }
             ConstraintDirection::None => {}
         }
     }

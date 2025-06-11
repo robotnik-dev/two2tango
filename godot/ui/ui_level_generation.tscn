@@ -1,0 +1,127 @@
+[gd_scene load_steps=5 format=3 uid="uid://dp8vmrt8iwfsr"]
+
+[ext_resource type="Script" uid="uid://bolpvlumxeneb" path="res://ui/ui_level_generation.gd" id="1_bhw3w"]
+[ext_resource type="Texture2D" uid="uid://xrj1fhqh3o74" path="res://assets/symbols/grabber.png" id="2_xao7s"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_xao7s"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_bhw3w"]
+font_color = Color(0, 1, 0, 1)
+
+[node name="UILevelGeneration" type="Control" node_paths=PackedStringArray("UIDifficultySlider", "UILevelPreview", "UIDifficultyPreviewLabel", "camera", "progress_bar", "error_label", "UIPlayButton")]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_bhw3w")
+UIDifficultySlider = NodePath("MarginContainer/VBoxContainer/UILevelSettingsChooser/VBoxContainer/UIDifficultySlider")
+UILevelPreview = NodePath("MarginContainer/VBoxContainer/MarginContainer/SubViewportContainer/UILevelPreview")
+UIDifficultyPreviewLabel = NodePath("MarginContainer/VBoxContainer/UILevelSettingsChooser/VBoxContainer/UIDifficultyPreviewLabel")
+camera = NodePath("MarginContainer/VBoxContainer/MarginContainer/SubViewportContainer/UILevelPreview/Camera2D")
+progress_bar = NodePath("MarginContainer/VBoxContainer/TopBar/VBoxContainer/ProgressBar")
+error_label = NodePath("MarginContainer/VBoxContainer/TopBar/VBoxContainer/ErrorLabel")
+UIPlayButton = NodePath("MarginContainer/VBoxContainer/MarginContainer/UIPlayButton")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+
+[node name="TopBar" type="MarginContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer/TopBar"]
+layout_mode = 2
+
+[node name="ErrorLabel" type="Label" parent="MarginContainer/VBoxContainer/TopBar/VBoxContainer"]
+visible = false
+layout_mode = 2
+size_flags_vertical = 7
+text = "Oops could not find a proper solution in time :( try again"
+label_settings = SubResource("LabelSettings_xao7s")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ProgressBar" type="ProgressBar" parent="MarginContainer/VBoxContainer/TopBar/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 6
+max_value = 1.0
+
+[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 6.73
+theme_override_constants/margin_left = 25
+theme_override_constants/margin_top = 25
+theme_override_constants/margin_right = 25
+theme_override_constants/margin_bottom = 25
+
+[node name="SubViewportContainer" type="SubViewportContainer" parent="MarginContainer/VBoxContainer/MarginContainer"]
+clip_contents = true
+layout_mode = 2
+stretch = true
+
+[node name="UILevelPreview" type="SubViewport" parent="MarginContainer/VBoxContainer/MarginContainer/SubViewportContainer"]
+handle_input_locally = false
+size = Vector2i(1030, 1423)
+render_target_update_mode = 4
+
+[node name="Camera2D" type="Camera2D" parent="MarginContainer/VBoxContainer/MarginContainer/SubViewportContainer/UILevelPreview"]
+
+[node name="UIPlayButton" type="Button" parent="MarginContainer/VBoxContainer/MarginContainer"]
+visible = false
+custom_minimum_size = Vector2(150, 150)
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 8
+text = "Play"
+
+[node name="UILevelSettingsChooser" type="MarginContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 20
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer/UILevelSettingsChooser"]
+layout_mode = 2
+
+[node name="UIDifficultyPreviewLabel" type="Label" parent="MarginContainer/VBoxContainer/UILevelSettingsChooser/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+text = "EASY"
+label_settings = SubResource("LabelSettings_bhw3w")
+horizontal_alignment = 1
+vertical_alignment = 1
+uppercase = true
+
+[node name="UIDifficultySlider" type="HSlider" parent="MarginContainer/VBoxContainer/UILevelSettingsChooser/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_icons/grabber = ExtResource("2_xao7s")
+theme_override_icons/grabber_highlight = ExtResource("2_xao7s")
+theme_override_icons/grabber_disabled = ExtResource("2_xao7s")
+max_value = 10.0
+step = 0.1
+
+[node name="UIGenerateLevelPreviewButton" type="Button" parent="MarginContainer/VBoxContainer/UILevelSettingsChooser/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 3
+theme_override_font_sizes/font_size = 50
+text = "CREATE"
+icon_alignment = 1
+
+[connection signal="pressed" from="MarginContainer/VBoxContainer/MarginContainer/UIPlayButton" to="." method="_on_ui_play_button_pressed"]
+[connection signal="value_changed" from="MarginContainer/VBoxContainer/UILevelSettingsChooser/VBoxContainer/UIDifficultySlider" to="." method="_on_ui_difficulty_slider_value_changed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/UILevelSettingsChooser/VBoxContainer/UIGenerateLevelPreviewButton" to="." method="_on_ui_generate_level_preview_button_pressed"]

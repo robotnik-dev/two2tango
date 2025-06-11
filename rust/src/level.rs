@@ -4,10 +4,7 @@ use godot::{
     prelude::*,
 };
 
-use crate::{
-    grid_cell::{CellProps, Constraint, ConstraintProps, GridCell, Symbol},
-    level_manager::RowColumn,
-};
+use crate::grid_cell::{CellProps, ConstraintProps, GridCell, Symbol};
 
 pub const MIN_COLUMNS: i32 = 6;
 pub const MAX_COLUMNS: i32 = 10;
@@ -26,6 +23,8 @@ pub struct Level {
     #[export]
     cell_scene: OnEditor<Gd<PackedScene>>,
 
+    pub cell_properties: Array<Gd<CellProps>>,
+
     base: Base<Control>,
 }
 
@@ -42,18 +41,45 @@ impl Level {
     #[signal]
     pub fn level_solved();
 
-    pub fn build(&mut self, cell_props: Vec<CellProps>) {
+    pub fn build_with_props(&mut self, cell_props: Array<Gd<CellProps>>) {
         self.update_cell_props(cell_props);
     }
 
-    pub fn update_cell_props(&mut self, cell_props: Vec<CellProps>) {
+    pub fn enable(&mut self) {
+        for mut cell in self.get_cells().iter_shared() {
+            cell.bind_mut().set_disabled(false, false);
+            cell.signals()
+                .clicked()
+                .connect_other(self, Self::on_cell_clicked);
+        }
+    }
+
+    pub fn build_with_props_preview(&mut self, cell_props: Array<Gd<CellProps>>) {
+        self.cell_properties = cell_props.clone();
         let amount = cell_props.len() as i32;
         self.set_columns(sqrt(amount as f64) as i32);
         for mut c in self.grid.get_children().iter_shared() {
             c.queue_free();
         }
 
-        for props in cell_props {
+        for props in cell_props.iter_shared() {
+            let mut cell = self.cell_scene.instantiate_as::<GridCell>();
+            self.grid.add_child(&cell);
+            cell.set_owner(&self.to_gd());
+            cell.bind_mut().setup(props);
+            cell.bind_mut().set_disabled(true, false);
+        }
+    }
+
+    pub fn update_cell_props(&mut self, cell_props: Array<Gd<CellProps>>) {
+        self.cell_properties = cell_props.clone();
+        let amount = cell_props.len() as i32;
+        self.set_columns(sqrt(amount as f64) as i32);
+        for mut c in self.grid.get_children().iter_shared() {
+            c.queue_free();
+        }
+
+        for props in cell_props.iter_shared() {
             let mut cell = self.cell_scene.instantiate_as::<GridCell>();
             self.grid.add_child(&cell);
             cell.set_owner(&self.to_gd());
@@ -68,6 +94,12 @@ impl Level {
     pub fn set_columns(&mut self, columns: i32) {
         self.columns = columns;
         self.grid.set_columns(columns);
+    }
+
+    #[func]
+    /// Return the size of the level
+    pub fn get_rect(&self) -> Rect2 {
+        Rect2::new(self.grid.get_global_position(), self.grid.get_size())
     }
 
     #[func]
@@ -152,7 +184,7 @@ impl Level {
         })
     }
 
-    pub fn get_constraint_props(&self, id: i32) -> Vec<ConstraintProps> {
+    pub fn get_constraint_props(&self, id: i32) -> Array<Gd<ConstraintProps>> {
         self.get_cell(id).unwrap().bind().get_constraint_props()
     }
 }

@@ -2,9 +2,9 @@
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 
 <svg
-   width="489.99997mm"
+   width="490mm"
    height="489.99997mm"
-   viewBox="0 0 489.99997 489.99997"
+   viewBox="0 0 490 489.99997"
    version="1.1"
    id="svg1"
    inkscape:version="1.4.2 (f4327f4, 2025-05-13)"
@@ -41,7 +41,7 @@
     <inkscape:grid
        id="grid1"
        units="mm"
-       originx="-11.000015"
+       originx="-11"
        originy="-11.000015"
        spacingx="0.99999997"
        spacingy="0.99999997"
@@ -57,23 +57,26 @@
      id="defs1" />
   <g
      inkscape:groupmode="layer"
-     id="layer5"
-     inkscape:label="Equal_A"
-     sodipodi:insensitive="true"
+     id="layer1"
+     inkscape:label="NonEqual_B"
      style="display:inline"
-     transform="translate(-11.000015,-11.000015)">
-    <circle
-       style="fill:#aaaaaa;fill-opacity:0.739224;stroke:#000000;stroke-width:20;stroke-dasharray:none;stroke-opacity:1"
-       id="path5"
-       cx="256"
-       cy="256"
-       r="190" />
+     transform="translate(-11,-11.000015)">
+    <path
+       style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:20;stroke-linecap:round;stroke-opacity:1"
+       d="M 159.99999,349.99999 349.99998,162.00001"
+       id="path3"
+       sodipodi:nodetypes="cc" />
+    <path
+       style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:20;stroke-linecap:round;stroke-opacity:1"
+       d="M 348.99997,351 160.99999,161.00001"
+       id="path3-8"
+       sodipodi:nodetypes="cc" />
     <rect
-       style="fill:none;fill-opacity:0.739224;stroke:none;stroke-width:20;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1"
-       id="rect6-7"
-       width="489.99997"
+       style="display:inline;fill:none;fill-opacity:0.739224;stroke:none;stroke-width:20;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1"
+       id="rect6-5"
+       width="490"
        height="489.99997"
-       x="11.000015"
+       x="11"
        y="11.000015" />
   </g>
 </svg>
