@@ -8,4 +8,4 @@ crate-type = ["cdylib"]
 
 [dependencies]
 godot = { version = "0.3.1", features = ["register-docs", "experimental-threads"] }
-gdrust_kit = { path = "../../gdrust_kit", version = "0.1.0", features = ["utils"] }
+gdrust_kit = { path = "../../gdrust_kit", version = "0.1.2", features = ["utils"] }
