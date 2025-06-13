@@ -65,7 +65,6 @@ impl Level {
         for props in cell_props.iter_shared() {
             let mut cell = self.cell_scene.instantiate_as::<GridCell>();
             self.grid.add_child(&cell);
-            cell.set_owner(&self.to_gd());
             cell.bind_mut().setup(props);
             cell.bind_mut().set_disabled(true, false);
         }
@@ -82,7 +81,6 @@ impl Level {
         for props in cell_props.iter_shared() {
             let mut cell = self.cell_scene.instantiate_as::<GridCell>();
             self.grid.add_child(&cell);
-            cell.set_owner(&self.to_gd());
             cell.bind_mut().setup(props);
             cell.signals()
                 .clicked()

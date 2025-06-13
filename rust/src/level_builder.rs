@@ -339,13 +339,13 @@ impl LevelBuilder {
                     .get_cell(id1)
                     .unwrap()
                     .bind_mut()
-                    .set_constraint(constraint_props_id1);
+                    .add_constraint_props(constraint_props_id1);
                 level
                     .bind()
                     .get_cell(id2)
                     .unwrap()
                     .bind_mut()
-                    .set_constraint(constraint_props_id2);
+                    .add_constraint_props(constraint_props_id2);
 
                 checked_pairs.push((id1, id2));
                 constraints_set += 1;

@@ -66,7 +66,8 @@ func _on_progress(value: float) -> void:
 
 
 func _exit_tree() -> void:
-	thread.wait_to_finish()
+	if thread:
+		thread.wait_to_finish()
 
 
 func _on_ui_play_button_pressed() -> void:

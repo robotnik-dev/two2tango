@@ -226,6 +226,17 @@ impl GridCell {
         self.set_invalid(invalid);
     }
 
+    pub fn add_constraint_props(&mut self, constraint_props: Gd<ConstraintProps>) {
+        self.props
+            .bind_mut()
+            .constraint_props
+            .push(&constraint_props);
+        let props = self.props.bind().constraint_props.clone();
+        for prop in props.iter_shared() {
+            self.set_constraint(prop.clone());
+        }
+    }
+
     pub fn set_constraint(&mut self, constraint_props: Gd<ConstraintProps>) {
         match constraint_props.bind().constraint_direction {
             ConstraintDirection::Top => {

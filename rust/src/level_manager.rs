@@ -38,6 +38,13 @@ impl LevelManager {
     }
 
     #[func]
+    pub fn quit_level(&mut self) {
+        if let Some(mut level) = self.get_active_level() {
+            level.queue_free();
+        }
+    }
+
+    #[func]
     fn on_cell_clicked(&mut self, id: i32) {
         if let Some(level) = self.get_active_level() {
             if let Some(mut cell) = level.bind().get_cell(id) {
@@ -179,7 +186,6 @@ impl LevelManager {
                 }
             }
         }
-        // FIXME: constraints do not work
         // if not -> INVALID
         // not need to visit more than the single constraint cell becaus this will run on each cell with a symbol
         for &(id, symbol) in symbols_sorted.iter() {
@@ -327,7 +333,6 @@ impl LevelManager {
                 }
             }
         }
-        // FIXME: constraints do not work
         // if not -> INVALID
         // not need to visit more than the single constraint cell becaus this will run on each cell with a symbol
         for &(id, symbol) in symbols_sorted.iter() {
