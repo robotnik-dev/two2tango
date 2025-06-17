@@ -26,6 +26,7 @@ while IFS= read -r -d '' file; do
     echo "Checking file: $file"
     
     # Use awk to find derive macros with GodotClass and the subsequent struct
+    # Fixed to use POSIX-compatible AWK syntax
     struct_in_file=$(awk '
         /^[[:space:]]*#\[derive\(.*GodotClass.*\)\]/ { 
             found_derive = 1
@@ -35,18 +36,26 @@ while IFS= read -r -d '' file; do
             # Skip other attributes
             next
         }
-        found_derive && /^[[:space:]]*pub[[:space:]]+struct[[:space:]]+([A-Za-z_][A-Za-z0-9_]*)/ {
-            match($0, /struct[[:space:]]+([A-Za-z_][A-Za-z0-9_]*)/, arr)
-            if (arr[1]) {
-                print arr[1]
+        found_derive && /^[[:space:]]*pub[[:space:]]+struct[[:space:]]+[A-Za-z_][A-Za-z0-9_]*/ {
+            # Extract struct name using gsub and substr
+            line = $0
+            gsub(/^[[:space:]]*pub[[:space:]]+struct[[:space:]]+/, "", line)
+            gsub(/[[:space:]].*$/, "", line)
+            gsub(/[^A-Za-z0-9_].*$/, "", line)
+            if (line != "") {
+                print line
             }
             found_derive = 0
             next
         }
-        found_derive && /^[[:space:]]*struct[[:space:]]+([A-Za-z_][A-Za-z0-9_]*)/ {
-            match($0, /struct[[:space:]]+([A-Za-z_][A-Za-z0-9_]*)/, arr)
-            if (arr[1]) {
-                print arr[1]
+        found_derive && /^[[:space:]]*struct[[:space:]]+[A-Za-z_][A-Za-z0-9_]*/ {
+            # Extract struct name using gsub and substr
+            line = $0
+            gsub(/^[[:space:]]*struct[[:space:]]+/, "", line)
+            gsub(/[[:space:]].*$/, "", line)
+            gsub(/[^A-Za-z0-9_].*$/, "", line)
+            if (line != "") {
+                print line
             }
             found_derive = 0
             next

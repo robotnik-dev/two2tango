@@ -21,6 +21,9 @@
 			"osx":{
 				"command": "/Applications/Godot.app/Contents/MacOS/Godot --editor --verbose"
 			},
+			"linux":{
+				"command": "${userHome}/Godot_v4.4-stable_linux.x86_64 --editor --verbose"
+			},
 			"group": "build",
 			"presentation": {
 				"echo": true,
@@ -48,6 +51,9 @@
 			"osx":{
 				"command": "/Applications/Godot.app/Contents/MacOS/Godot --headless --verbose --export-release mac export/game.zip"
 			},
+			"linux":{
+				"command": "sudo ${userHome}/Godot_v4.4-stable_linux.x86_64 --headless --verbose --export-release mac export/game.zip"
+			},
 			"group": "build"
 		},
 
@@ -65,6 +71,9 @@
 				]
 			},
 			"osx": {
+				"command": "cargo build"
+			},
+			"linux": {
 				"command": "cargo build"
 			},
 			"options": {
@@ -95,6 +104,9 @@
 			"osx":{
 				"command": "source clang_osx.sh && cargo build --target=aarch64-linux-android",
 			},
+			"linux":{
+				"command": "source clang.sh && cargo build --target=aarch64-linux-android",
+			},
 			"options": {
 				"cwd": "${cwd}/rust"
 			},
@@ -113,6 +125,9 @@
 				]
 			},
 			"osx":{
+				"command": "${userHome}/emsdk/emsdk activate 3.1.62 && source ${userHome}/emsdk/emsdk_env.sh && cargo +nightly build -Zbuild-std --target wasm32-unknown-emscripten",
+			},
+			"linux":{
 				"command": "${userHome}/emsdk/emsdk activate 3.1.62 && source ${userHome}/emsdk/emsdk_env.sh && cargo +nightly build -Zbuild-std --target wasm32-unknown-emscripten",
 			},
 			"options": {
@@ -135,6 +150,9 @@
 			"osx": {
 				"command": "cargo build --release"
 			},
+			"linux": {
+				"command": "cargo build --release"
+			},
 			"options": {
 				"cwd": "${cwd}/rust"
 			},
@@ -152,6 +170,9 @@
 				]
 			},
 			"osx": {
+				"command": "cargo clean"
+			},
+			"linux": {
 				"command": "cargo clean"
 			},
 			"options": {
@@ -173,6 +194,9 @@
 				]
 			},
 			"osx": {
+				"command": "./update_class_icons.sh"
+			},
+			"linux": {
 				"command": "./update_class_icons.sh"
 			},
 			"group": "build",
